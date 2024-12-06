@@ -11,7 +11,7 @@
         public string? ProfilePicture { get; set; }
         public bool Admin { get; set; }
         public bool Verified { get; set; }
-        public string? VerifiedCode { get; set; }
+        public int VerifiedCode { get; set; }
         public bool Banned { get; set; }
         public DateTime? LastLogin { get; set; }
         public string Language { get; set; }

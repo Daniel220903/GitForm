@@ -1,0 +1,62 @@
+﻿@model FormClick.ViewModels.SignUpVM
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4>Login</h4>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewData["Mensaje"] != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @ViewData["Mensaje"]
+                            </div>
+                        }
+
+                        @{
+                            if (TempData["Mensaje"] != null)
+                            {
+                                <div class="alert alert-success">
+                                    @TempData["Mensaje"]
+                                </div>
+                            }
+                        }
+
+                        <form asp-controller="Access" asp-action="Login" method="post">
+                            <div class="form-group mb-3">
+                                <label for="Correo">Email</label>
+                                <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter your email" required />
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="Clave">Password</label>
+                                <input type="password" class="form-control" id="Password" name="Password" placeholder="Enter your password" required />
+                            </div>
+
+                            <div class="form-group mb-3 text-center">
+                                <button type="submit" class="btn btn-primary w-100">Login</button>
+                            </div>
+
+                            <div class="form-group text-center">
+                                <p>Don't have an account? <a asp-action="SignUp" asp-controller="Access">Register here</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
