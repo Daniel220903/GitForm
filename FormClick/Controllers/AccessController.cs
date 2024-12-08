@@ -60,13 +60,6 @@ namespace FormClick.Controllers{
 
             List<Claim> claims = new List<Claim>() {
                 new Claim("Id", foundedUser.Id.ToString()),
-                new Claim("Username", foundedUser.Username),
-                new Claim("Admin", foundedUser.Admin.ToString()),
-                new Claim("Verified", foundedUser.Verified.ToString()),
-                new Claim("Banned", foundedUser.Banned.ToString()),
-                new Claim("ProfilePicture", foundedUser.ProfilePicture ?? ""),
-                new Claim("DarkMode", foundedUser.DarkMode.ToString()),
-                new Claim("Language", foundedUser.Language ?? ""),
                 new Claim(ClaimTypes.Email, foundedUser.Email)
             };
 
