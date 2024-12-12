@@ -9,6 +9,8 @@ using FormClick.Data;
 using Microsoft.EntityFrameworkCore;
 //using AppLogin.ViewModels;
 using System.Dynamic;
+using FormClick.ViewModels;
+using System.Security.Claims;
 
 
 namespace FormClick.Controllers{
@@ -24,7 +26,26 @@ namespace FormClick.Controllers{
         }
 
         public IActionResult Index(){
-            return View();
+            var userClaims = User.Identity as ClaimsIdentity;
+            var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            var userId = int.Parse(userIdClaim);
+
+            var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
+
+            var templates = _appDbContext.Templates
+                .Where(t => t.DeletedAt == null && (isAdmin || t.Public || t.TemplateAccesses.Any(ta => ta.UserId == userId) || t.UserId == userId))
+                .OrderByDescending(t => t.CreatedAt).Take(30)
+                .Select(t => new TemplateViewModel {
+                    TemplateId = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreatedAt = t.CreatedAt,
+                    UserId = t.User.Id,
+                    UserName = t.User.Username,
+                    IsOwner = t.User.Id == userId
+                }).ToList();
+
+            return View(templates);
         }
 
         public IActionResult Privacy(){

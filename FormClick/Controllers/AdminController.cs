@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 
-namespace FormClick.Controllers
-{
-    public class AdminController : Controller
-    {
+namespace FormClick.Controllers{
+    public class AdminController : Controller{
         private readonly AppDBContext _context;
         private readonly ILogger<AdminController> _logger;
 
@@ -57,7 +55,8 @@ namespace FormClick.Controllers
                 return BadRequest("No users selected or action type is missing.");
             }
 
-            try{
+            try
+            {
                 switch (payload.ActionType){
                     case "borrar":
                         foreach (var userId in payload.SelectedUsers){

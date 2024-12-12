@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FormClick.styles.css" asp-append-version="true" />
+    
 </head>
 <body>
     <header>
@@ -28,31 +29,27 @@
                         @{
                             var userClaims = User.Identity as ClaimsIdentity;
                             var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
-
                             bool isAdmin = false;
 
-                            if (!string.IsNullOrEmpty(userIdClaim)){
-                                if (int.TryParse(userIdClaim, out int userId)){
+                            if (!string.IsNullOrEmpty(userIdClaim))
+                                if (int.TryParse(userIdClaim, out int userId))
                                     isAdmin = dbContext.Users.Any(u => u.Id == userId && u.Admin);
-                                }
-                            }
 
                             if (isAdmin) {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Menu de Admin</a>
                                 </li>
                             }
-                        }
-
-
-                        @{
-                            if (TempData["Mensaje"] != null)
-                            {
+                        
+                            if (TempData["Mensaje"] != null){
                                 <div class="alert alert-success">
                                     @TempData["Mensaje"]
                                 </div>
                             }
                         }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Template" asp-action="Index">New Template</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Access" asp-action="Logout">Logout</a>
                         </li>

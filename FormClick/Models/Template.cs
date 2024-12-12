@@ -20,6 +20,6 @@ namespace FormClick.Models
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Tag> Tags { get; set; }
         public ICollection<Response> Responses { get; set; }
+        public ICollection<TemplateAccess> TemplateAccesses { get; set; }
     }
-
 }
