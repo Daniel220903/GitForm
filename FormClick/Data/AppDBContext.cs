@@ -13,9 +13,10 @@ namespace FormClick.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<QuestionOption> QuestionOptions { get; set; }
-        public DbSet<Response> Responses { get; set; }
+        public DbSet<Response> Responses { get; set; }  
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Template> Templates { get; set; }
+        public DbSet<TemplateAccess> TemplateAccess { get; set; }
         public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,7 +39,8 @@ namespace FormClick.Data
                       .HasForeignKey(c => c.UserId);
             });
 
-            modelBuilder.Entity<Template>(entity => {
+            modelBuilder.Entity<Template>(entity =>
+            {
                 entity.HasKey(t => t.Id);
                 entity.HasOne(t => t.User)
                       .WithMany(u => u.Templates)
@@ -55,9 +57,19 @@ namespace FormClick.Data
                 entity.HasMany(t => t.Responses)
                       .WithOne(r => r.Template)
                       .HasForeignKey(r => r.TemplateId);
+                entity.HasMany(t => t.TemplateAccesses)
+                      .WithOne(ta => ta.Template)
+                      .HasForeignKey(ta => ta.TemplateId);
             });
 
-            modelBuilder.Entity<Question>(entity => {
+            modelBuilder.Entity<TemplateAccess>(entity =>
+            {
+                entity.HasKey(ta => ta.Id);
+                entity.HasOne(ta => ta.Template).WithMany(t => t.TemplateAccesses).HasForeignKey(ta => ta.TemplateId);
+            });
+
+            modelBuilder.Entity<Question>(entity =>
+            {
                 entity.HasKey(q => q.Id);
                 entity.HasOne(q => q.Template)
                       .WithMany(t => t.Questions)
@@ -68,7 +80,10 @@ namespace FormClick.Data
                 entity.HasMany(q => q.Answers)
                       .WithOne(a => a.Question)
                       .HasForeignKey(a => a.QuestionId);
+                entity.Property(q => q.openAnswer)
+                      .IsRequired(false);
             });
+
 
             modelBuilder.Entity<QuestionOption>(entity => {
                 entity.HasKey(o => o.Id);

@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Personalizable</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .quest {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .quest-index {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .correct-answer {
+            background-color: #f9f9f9;
+            padding: 5px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .user-table th, .user-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .user-table th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Crear Plantilla</h1>
+
+    <label for="template-title">Título de la plantilla:</label>
+    <input type="text" id="template-title" placeholder="Escribe un título..." style="width: 100%; margin-bottom: 10px;">
+
+    <label for="template-topic">Tópico:</label>
+    <input type="text" id="template-topic" placeholder="Escribe el tópico del formulario..." style="width: 100%; margin-bottom: 10px;">
+
+    <label for="template-description">Descripción:</label>
+    <textarea id="template-description" placeholder="Escribe una descripción para el formulario..." style="width: 100%; margin-bottom: 10px;" rows="3"></textarea>
+
+    <div>
+        <label>
+            <input type="checkbox" id="template-public" checked>
+            Hacer público
+        </label>
+    </div>
+
+    <table id="user-table" class="user-table">
+        <thead>
+            <tr>
+                <th>Seleccionar</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div id="quests-container"></div>
+
+    <button id="add-quest">Agregar Pregunta</button>
+    <button id="save-and-exit">Guardar y Salir</button>
+    <button id="create-template">Crear Plantilla</button>
+
+    <script>
+        let questCount = 0;
+
+        const updateQuestIndices = () => {
+            $("#quests-container .quest").each(function (index) {
+                $(this).find(".quest-index").text(`Pregunta ${index + 1}`);
+            });
+        };
+
+        const createQuest = () => {
+            if (questCount >= 50) {
+                alert("Has alcanzado el máximo de 50 preguntas.");
+                return;
+            }
+
+            questCount++;
+
+            const questHtml = `
+                <div class="quest" id="quest-${questCount}">
+                    <div class="quest-index">Pregunta ${questCount}</div>
+                    <label>Pregunta:</label>
+                    <input type="text" class="quest-title" placeholder="Escribe tu pregunta..." style="width: 100%; margin-bottom: 10px;">
+
+                    <label>Tipo de Pregunta:</label>
+                    <select class="quest-type" style="width: 100%; margin-bottom: 10px;">
+                        <option value="multiple-choice">Opción Múltiple</option>
+                        <option value="true-false">Cierto/Falso</option>
+                        <option value="open">Respuesta Abierta</option>
+                    </select>
+
+                    <div class="options-container" style="display: none;"></div>
+                    <button class="remove-quest">Eliminar Pregunta</button>
+                </div>
+            `;
+
+            $("#quests-container").append(questHtml);
+            updateQuestIndices();
+        };
+
+        $(document).on("change", ".quest-type", function () {
+            const questDiv = $(this).closest(".quest");
+            const type = $(this).val();
+            const optionsContainer = questDiv.find(".options-container");
+
+            optionsContainer.empty();
+
+            if (type === "multiple-choice") {
+                optionsContainer.append(`
+                    <label>Opciones (máximo 4):</label>
+                    <div class="multiple-options">
+                        <input type="text" class="option" placeholder="Opción 1">
+                        <input type="radio" name="correct-${questCount}" class="correct-answer-selector"> Correcta
+                    </div>
+                    <button class="add-option">Agregar Opción</button>
+                `);
+            } else if (type === "true-false") {
+                optionsContainer.append(`
+                    <div>
+                        <input type="radio" name="correct-${questCount}" value="Cierto" class="correct-answer-selector"> Cierto
+                        <input type="radio" name="correct-${questCount}" value="Falso" class="correct-answer-selector"> Falso
+                    </div>
+                `);
+            } else if (type === "open") {
+                optionsContainer.append(`
+                    <label>Respuesta esperada:</label>
+                    <input type="text" class="expected-answer" placeholder="Respuesta esperada...">
+                `);
+            }
+
+            optionsContainer.show();
+        });
+
+        $(document).on("click", ".add-option", function () {
+            const optionsDiv = $(this).siblings(".multiple-options");
+
+            if (optionsDiv.find(".option").length >= 4) {
+                alert("Solo puedes agregar un máximo de 4 opciones.");
+                return;
+            }
+
+            optionsDiv.append(`
+                <div class="option-container">
+                    <input type="text" class="option" placeholder="Nueva opción">
+                    <input type="radio" name="correct-${questCount}" class="correct-answer-selector"> Correcta
+                </div>
+            `);
+        });
+
+        $(document).on("click", ".remove-quest", function () {
+            $(this).closest(".quest").remove();
+            questCount--;
+            updateQuestIndices();
+        });
+
+       const gatherTemplateData = () => {
+    const title = $("#template-title").val();
+    const topic = $("#template-topic").val();
+    const description = $("#template-description").val();
+    const isPublic = $("#template-public").is(":checked");
+    const quests = [];
+    const selectedUsers = [];
+
+    // Recopilar preguntas
+    $(".quest").each(function () {
+        const questTitle = $(this).find(".quest-title").val();
+        const questType = $(this).find(".quest-type").val();
+        let correctAnswer = null;
+        let options = null;
+        let expectedAnswer = null;
+
+        if (questType === "multiple-choice") {
+            options = [];
+            $(this).find(".multiple-options .option").each(function () {
+                options.push($(this).val());
+            });
+            correctAnswer = $(this).find(".multiple-options input.correct-answer-selector:checked").siblings(".option").val();
+        } else if (questType === "true-false") {
+            correctAnswer = $(this).find(".correct-answer-selector:checked").val();
+        } else if (questType === "open") {
+            expectedAnswer = $(this).find(".expected-answer").val();
+        }
+
+        quests.push({
+            title: questTitle,
+            type: questType,
+            options,
+            correctAnswer,
+            expectedAnswer,
+        });
+    });
+
+    // Recopilar usuarios seleccionados
+    $('#user-table tbody input[type="checkbox"]:checked').each(function () {
+        selectedUsers.push($(this).val());
+    });
+
+    return { title, topic, description, isPublic, quests, selectedUsers };
+};
+
+
+        $("#create-template").click(async () => {
+            const templateData = gatherTemplateData();
+            console.log("Datos enviados al backend:", JSON.stringify(templateData, null, 2));
+
+            try {
+                const response = await fetch("/api/Template/CreateTemplate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(templateData),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert("Plantilla creada con éxito.");
+                    window.location.href = "/Home/Index";
+                } else {
+                    alert("Error al crear la plantilla. Por favor, intenta nuevamente.");
+                }
+            } catch (error) {
+                console.error("Error al enviar los datos:", error);
+                alert("Hubo un problema al enviar los datos al servidor.");
+            }
+        });
+
+        $("#save-and-exit").click(() => {
+            alert("Guardado y saliendo...");
+        });
+
+        $("#add-quest").click(createQuest);
+
+        const loadUsers = async () => {
+            try {
+                const response = await fetch('Template/getUsers');
+                if (!response.ok) {
+                    throw new Error('Error al cargar usuarios');
+                }
+                const users = await response.json();
+
+                const tableBody = $('#user-table tbody');
+                tableBody.empty();
+
+                users.forEach(user => {
+                    tableBody.append(`
+                        <tr>
+                            <td><input type="checkbox" value="${user.id}"></td>
+                            <td>${user.email}</td>
+                        </tr>
+                    `);
+                });
+
+                $('#user-table').show();
+            } catch (error) {
+                console.error('Error cargando usuarios:', error);
+                alert('No se pudieron cargar los usuarios.');
+            }
+        };
+
+        document.getElementById('template-public').addEventListener('change', function () {
+            if (!this.checked) {
+                $('#user-table').show();
+                $(document).ready(loadUsers);
+            } else {
+                $('#user-table').hide();
+            }
+        });
+    </script>
+</body>
+</html>

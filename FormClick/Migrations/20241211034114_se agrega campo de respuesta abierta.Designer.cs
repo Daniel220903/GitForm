@@ -4,6 +4,7 @@ using FormClick.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FormClick.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241211034114_se agrega campo de respuesta abierta")]
+    partial class seagregacampoderespuestaabierta
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,36 +315,6 @@ namespace FormClick.Migrations
                     b.ToTable("Templates");
                 });
 
-            modelBuilder.Entity("FormClick.Models.TemplateAccess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TemplateId");
-
-                    b.ToTable("TemplateAccess");
-                });
-
             modelBuilder.Entity("FormClick.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -536,17 +509,6 @@ namespace FormClick.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FormClick.Models.TemplateAccess", b =>
-                {
-                    b.HasOne("FormClick.Models.Template", "Template")
-                        .WithMany("TemplateAccesses")
-                        .HasForeignKey("TemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Template");
-                });
-
             modelBuilder.Entity("FormClick.Models.Question", b =>
                 {
                     b.Navigation("Answers");
@@ -563,8 +525,6 @@ namespace FormClick.Migrations
                     b.Navigation("Responses");
 
                     b.Navigation("Tags");
-
-                    b.Navigation("TemplateAccesses");
                 });
 
             modelBuilder.Entity("FormClick.Models.User", b =>
