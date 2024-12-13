@@ -1,5 +1,9 @@
 ﻿@model IEnumerable<FormClick.ViewModels.TemplateViewModel>
+@using Microsoft.AspNetCore.Mvc.Localization
 
+@inject IViewLocalizer Localizer
+
+<h2 class="mb-4">@Localizer["Welcome"]</h2>
 <h2 class="mb-4">Últimos Templates</h2>
 
 <div class="container">
