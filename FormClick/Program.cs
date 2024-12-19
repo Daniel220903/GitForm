@@ -65,7 +65,7 @@ namespace FormClick{
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Access}/{action=Login}/{id?}");
+                pattern: "{controller=Access}/{action=Home}/{id?}");
 
             app.Run();
         }

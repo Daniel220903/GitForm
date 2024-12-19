@@ -4,59 +4,168 @@
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        .navbar {
+            padding: 15px;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh);
+        }
+
+        .login-container {
+            flex-basis: 50%;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .image-container {
+            flex-basis: 50%;
+            height: 100%;
+        }
+
+            .image-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+
+            .footer .footer-column {
+                text-align: center;
+            }
+
+            .footer a {
+                color: inherit;
+                text-decoration: none;
+            }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h4>Login</h4>
-                    </div>
-                    <div class="card-body">
-                        @if (ViewData["Mensaje"] != null)
+
+    <div class="main-container">
+
+        <div class="login-container">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Login</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewData["Mensaje"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @ViewData["Mensaje"]
+                        </div>
+                    }
+
+                    @{
+                        if (TempData["Mensaje"] != null)
                         {
-                            <div class="alert alert-danger" role="alert">
-                                @ViewData["Mensaje"]
+                            <div class="alert alert-success">
+                                @TempData["Mensaje"]
                             </div>
                         }
+                    }
 
-                        @{
-                            if (TempData["Mensaje"] != null)
-                            {
-                                <div class="alert alert-success">
-                                    @TempData["Mensaje"]
-                                </div>
-                            }
-                        }
+                    <form asp-controller="Access" asp-action="Login" method="post">
+                        <div class="form-group mb-3">
+                            <label for="Correo">Email</label>
+                            <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter your email" required />
+                        </div>
 
-                        <form asp-controller="Access" asp-action="Login" method="post">
-                            <div class="form-group mb-3">
-                                <label for="Correo">Email</label>
-                                <input type="email" class="form-control" id="Email" name="Email" placeholder="Enter your email" required />
-                            </div>
+                        <div class="form-group mb-3">
+                            <label for="Clave">Password</label>
+                            <input type="password" class="form-control" id="Password" name="Password" placeholder="Enter your password" required />
+                        </div>
 
-                            <div class="form-group mb-3">
-                                <label for="Clave">Password</label>
-                                <input type="password" class="form-control" id="Password" name="Password" placeholder="Enter your password" required />
-                            </div>
+                        <div class="form-group mb-3 text-center">
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </div>
 
-                            <div class="form-group mb-3 text-center">
-                                <button type="submit" class="btn btn-primary w-100">Login</button>
-                            </div>
-
-                            <div class="form-group text-center">
-                                <p>Don't have an account? <a asp-action="SignUp" asp-controller="Access">Register here</a></p>
-                            </div>
-                        </form>
-                    </div>
+                        <div class="form-group text-center">
+                            <p>Don't have an account? <a asp-action="SignUp" asp-controller="Access">Register here</a></p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+        <div class="image-container">
+            <img src="https://cdn.pixabay.com/photo/2024/04/30/04/36/chess-8729265_1280.png" alt="Imagen de ejemplo">
+        </div>
+
     </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 footer-column">
+                    <h5>Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Inicio</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contáctanos</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 footer-column">
+                    <h5>Información</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Términos y Condiciones</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 footer-column">
+                    <h5>Síguenos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Instagram</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

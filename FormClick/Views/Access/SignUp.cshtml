@@ -4,18 +4,65 @@
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign up</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .image-container {
+            flex-basis: 50%;
+            height: 100%;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-container {
+            flex-basis: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="row mt-5 justify-content-center">
-        <div class="col-sm-4">
+    <div class="main-container">
+
+        <!-- Imagen (izquierda) -->
+        <div class="image-container">
+            <img src="https://cdn.pixabay.com/photo/2024/04/30/04/36/chess-8729265_1280.png" alt="Imagen de ejemplo">
+        </div>
+
+        <!-- Formulario de SignUp (derecha) -->
+        <div class="form-container">
             <div class="card">
-                <div class="card-header">
-                    Sign up
+                <div class="card-header text-center">
+                    <h4>Sign Up</h4>
                 </div>
                 <div class="card-body">
                     <form asp-controller="Access" asp-action="SignUp" method="post">
@@ -29,7 +76,7 @@
                             <option value="esp">Español</option>
                         </select>
                         <div class="d-grid gap-2 mb-3">
-                            <button class="btn btn-primary">Sign up</button>
+                            <button class="btn btn-primary">Sign Up</button>
                         </div>
 
                         @if (ViewData["Mensaje"] != null)
@@ -50,6 +97,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
