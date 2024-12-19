@@ -25,17 +25,28 @@ namespace FormClick.Controllers{
             _logger = logger;
         }
 
-        public IActionResult Index(){
+        public IActionResult Index()
+        {
             var userClaims = User.Identity as ClaimsIdentity;
             var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
             var userId = int.Parse(userIdClaim);
 
-            var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
+            var isAdmin = _appDbContext.Users
+                .Where(u => u.Id == userId)
+                .Select(u => u.Admin)
+                .FirstOrDefault();
 
             var templates = _appDbContext.Templates
-                .Where(t => t.DeletedAt == null && (isAdmin || t.Public || t.TemplateAccesses.Any(ta => ta.UserId == userId) || t.UserId == userId))
-                .OrderByDescending(t => t.CreatedAt).Take(30)
-                .Select(t => new TemplateViewModel {
+                .Where(t => t.DeletedAt == null
+                            && (isAdmin
+                                || t.Public
+                                || t.TemplateAccesses.Any(ta => ta.UserId == userId)
+                                || t.UserId == userId)
+                            && !_appDbContext.Responses.Any(r => r.TemplateId == t.Id && r.UserId == userId))
+                .OrderByDescending(t => t.CreatedAt)
+                .Take(30)
+                .Select(t => new TemplateViewModel
+                {
                     TemplateId = t.Id,
                     Title = t.Title,
                     Description = t.Description,
@@ -43,10 +54,12 @@ namespace FormClick.Controllers{
                     UserId = t.User.Id,
                     UserName = t.User.Username,
                     IsOwner = t.User.Id == userId
-                }).ToList();
+                })
+                .ToList();
 
             return View(templates);
         }
+
 
         public IActionResult Privacy(){
             return View();

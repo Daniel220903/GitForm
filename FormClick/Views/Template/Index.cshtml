@@ -187,33 +187,35 @@
     const selectedUsers = [];
 
     // Recopilar preguntas
-    $(".quest").each(function () {
-        const questTitle = $(this).find(".quest-title").val();
-        const questType = $(this).find(".quest-type").val();
-        let correctAnswer = null;
-        let options = null;
-        let expectedAnswer = null;
+            $(".quest").each(function () {
+                const questTitle = $(this).find(".quest-title").val();
+                const questType = $(this).find(".quest-type").val();
+                let correctAnswer = null;
+                let options = null;
+                let expectedAnswer = null; // <-- Aquí se inicializa expectedAnswer
 
-        if (questType === "multiple-choice") {
-            options = [];
-            $(this).find(".multiple-options .option").each(function () {
-                options.push($(this).val());
+                if (questType === "multiple-choice") {
+                    options = [];
+                    $(this).find(".multiple-options .option").each(function () {
+                        options.push($(this).val());
+                    });
+                    correctAnswer = $(this).find(".multiple-options input.correct-answer-selector:checked").siblings(".option").val();
+                } else if (questType === "true-false") {
+                    correctAnswer = $(this).find(".correct-answer-selector:checked").val();
+                    expectedAnswer = correctAnswer; // <-- Se asigna el valor seleccionado
+                } else if (questType === "open") {
+                    expectedAnswer = $(this).find(".expected-answer").val();
+                }
+
+                quests.push({
+                    title: questTitle,
+                    type: questType,
+                    options,
+                    correctAnswer,
+                    expectedAnswer, // <-- Se incluye expectedAnswer en el objeto final
+                });
             });
-            correctAnswer = $(this).find(".multiple-options input.correct-answer-selector:checked").siblings(".option").val();
-        } else if (questType === "true-false") {
-            correctAnswer = $(this).find(".correct-answer-selector:checked").val();
-        } else if (questType === "open") {
-            expectedAnswer = $(this).find(".expected-answer").val();
-        }
 
-        quests.push({
-            title: questTitle,
-            type: questType,
-            options,
-            correctAnswer,
-            expectedAnswer,
-        });
-    });
 
     // Recopilar usuarios seleccionados
     $('#user-table tbody input[type="checkbox"]:checked').each(function () {

@@ -13,7 +13,7 @@ namespace FormClick.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<QuestionOption> QuestionOptions { get; set; }
-        public DbSet<Response> Responses { get; set; }  
+        public DbSet<Response> Responses { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Template> Templates { get; set; }
         public DbSet<TemplateAccess> TemplateAccess { get; set; }
@@ -94,13 +94,26 @@ namespace FormClick.Data
 
             modelBuilder.Entity<Answer>(entity => {
                 entity.HasKey(a => a.Id);
+
+                // Relación muchos a uno: Un Answer pertenece a un Question
                 entity.HasOne(a => a.Question)
                       .WithMany(q => q.Answers)
-                      .HasForeignKey(a => a.QuestionId);
+                      .HasForeignKey(a => a.QuestionId)
+                      .OnDelete(DeleteBehavior.Restrict); // Opcional: Evitar la eliminación en cascada
+
+                // Relación opcional muchos a uno: Un Answer puede estar vinculado a un QuestionOption
                 entity.HasOne(a => a.Option)
                       .WithMany()
-                      .HasForeignKey(a => a.OptionId);
+                      .HasForeignKey(a => a.OptionId)
+                      .OnDelete(DeleteBehavior.Restrict); // Opcional: Evitar eliminación en cascada
+
+                // Relación muchos a uno: Un Answer pertenece a un Response
+                entity.HasOne(a => a.Response)
+                      .WithMany(r => r.Answers)
+                      .HasForeignKey(a => a.ResponseId)
+                      .OnDelete(DeleteBehavior.Restrict); // Opcional: Evitar la eliminación en cascada
             });
+
 
             modelBuilder.Entity<Response>(entity => {
                 entity.HasKey(r => r.Id);

@@ -1,0 +1,60 @@
+﻿@model List<FormClick.ViewModels.AnswerTemplateVM>
+
+@{
+    ViewData["Title"] = "Mis Templates";
+}
+
+<h1>Mis Templates</h1>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        @foreach (var template in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">@template.Title</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Descripción:</strong> @template.Description
+                        </p>
+                        <p class="card-text">
+                            <strong>Creado el:</strong> @template.CreatedAt.ToString("dd/MM/yyyy")
+                        </p>
+
+                        @if (template.Responses != null && template.Responses.Any())
+                        {
+                            <h6>Respuestas:</h6>
+                            <ul class="list-group">
+                                @foreach (var response in template.Responses)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>Usuario:</strong> @response.UserName <br />
+                                            <strong>Puntuación:</strong> @response.Score <br />
+                                            <strong>Fecha:</strong> @response.CreatedAt.ToString("dd/MM/yyyy")
+                                        </div>
+                                        <a class="btn btn-primary btn-sm" href="/api/Template/showOwnAnsweredTemplates/@response.ResponseId">Ver Respuesta</a>
+
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No hay respuestas aún.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        No has creado ningún template aún.
+    </div>
+}

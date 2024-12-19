@@ -1,0 +1,19 @@
+﻿@model IEnumerable<FormClick.Models.Response>
+
+<div class="row">
+    @foreach (var response in Model)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="card">
+              
+                <div class="card-body">
+                    <h5 class="card-title">@response.Template.Title</h5>
+                    <p class="card-text">Score: @response.Score</p>
+                    <a href="http://localhost:5180/api/Template/AnswerTemplate/@response.TemplateId" class="btn btn-primary">Ver Respuesta</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
