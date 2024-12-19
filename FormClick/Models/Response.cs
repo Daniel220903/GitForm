@@ -13,6 +13,8 @@
         // Navigation properties
         public Template Template { get; set; }
         public User User { get; set; }
-    }
 
+        // Cambiar de un único Answer a una colección de Answers
+        public ICollection<Answer> Answers { get; set; } = new List<Answer>();
+    }
 }

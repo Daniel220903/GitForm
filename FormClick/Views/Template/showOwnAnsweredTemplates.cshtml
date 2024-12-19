@@ -1,0 +1,63 @@
+﻿@model FormClick.ViewModels.ResponseVM
+
+@{
+    ViewData["Title"] = "Respuestas del formulario";
+    Console.Write(@Model);
+}
+
+<h2>@Model.Title</h2>
+<p>@Model.Description</p>
+<p><strong>Tema:</strong> @Model.Topic</p>
+
+<div>
+    @foreach (var question in Model.Questions)
+    {
+        <div class="question-container">
+            <h4>@question.Text</h4>
+
+            @if (question.Type == "true-false")
+            {
+                <p><strong>Opciones:</strong></p>
+                <ul>
+                    <li style="@(question.SelectedAnswer == "Cierto" ? "text-decoration: underline; font-weight: bold;" : "")">
+                        Verdadero
+                        @(question.SelectedAnswer == "Verdadero" ? " (Seleccionada)" : "")
+                    </li>
+                    <li style="@(question.SelectedAnswer == "Falso" ? "text-decoration: underline; font-weight: bold;" : "")">
+                        Falso
+                        @(question.SelectedAnswer == "Falso" ? " (Seleccionada)" : "")
+                    </li>
+                </ul>
+                <p>
+                    <strong>¿Correcta?</strong>
+                    @(question.IsCorrect ? "Sí" : "No")
+                </p>
+            }
+            else if (question.Type == "multiple-choice")
+            {
+                <p><strong>Opciones:</strong></p>
+                <ul>
+                    @foreach (var option in question.Options)
+                    {
+                        <li style="@(option.OptionId == question.SelectedOptionId ? "text-decoration: underline; font-weight: bold;" : "")">
+                            @option.Text
+                            @(option.OptionId == question.SelectedOptionId ? " (Seleccionada)" : "")
+                        </li>
+                    }
+                </ul>
+                <p>
+                    <strong>¿Correcta?</strong>
+                    @(question.IsCorrect ? "Sí" : "No")
+                </p>
+            }
+            else if (question.Type == "open")
+            {
+                <p><strong>Tu respuesta:</strong> @question.SelectedAnswer</p>
+                <p><strong>¿Correcta?</strong> @(question.IsCorrect ? "Sí" : "No")</p>
+            }
+        </div>
+        <hr />
+    }
+</div>
+<!-- Botón para regresar a showAnsweredTemplates -->
+<a href="http://localhost:5180/api/Template/showOwnTemplates" class="btn btn-secondary mt-3">Regresar</a>

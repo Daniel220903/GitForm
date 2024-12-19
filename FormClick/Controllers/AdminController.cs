@@ -3,8 +3,10 @@ using FormClick.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FormClick.Controllers{
+    [Authorize]
     public class AdminController : Controller{
         private readonly AppDBContext _context;
         private readonly ILogger<AdminController> _logger;
