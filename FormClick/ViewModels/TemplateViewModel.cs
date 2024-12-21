@@ -9,5 +9,7 @@
         public int UserId { get; set; }
         public string UserName { get; set; }
         public bool IsOwner { get; set; }
+        public bool? HasLiked { get; set; }
+        public int? TotalLikes { get; set; }
     }
 }

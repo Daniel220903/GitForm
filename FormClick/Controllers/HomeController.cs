@@ -53,12 +53,16 @@ namespace FormClick.Controllers{
                     CreatedAt = t.CreatedAt,
                     UserId = t.User.Id,
                     UserName = t.User.Username,
-                    IsOwner = t.User.Id == userId
+                    IsOwner = t.User.Id == userId,
+                    HasLiked = t.Likes.Any(l => l.UserId == userId),
+                    TotalLikes = t.Likes.Count() // Obtiene el total de likes para cada template
                 })
                 .ToList();
 
             return View(templates);
         }
+
+
 
 
         public IActionResult Privacy(){

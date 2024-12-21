@@ -6,12 +6,17 @@
 
 <h2 class="text-center my-4">User Profile</h2>
 
-<form method="post" asp-controller="User" asp-action="Update" id="userForm" class="container">
+<form method="post" asp-controller="User" asp-action="Update" id="userForm" class="container" enctype="multipart/form-data">
+    <div class="form-group text-center">
+        <img src="@Model.ProfilePicture" alt="Profile Picture" class="img-fluid rounded-circle profile-img" />
+        <br />
+        <button type="button" class="btn btn-secondary" id="addProfilePictureButton">Añadir Foto de Perfil</button>
+        <div class="dropzone mx-auto" id="profilePictureDropzone" style="display: none;"></div>
+        <br />
+    </div>
     <div class="form-group">
         <label for="Name">Name</label>
         <input type="text" class="form-control form-control-lg" id="Name" name="Name" value="@Model.Name" required />
-    </div>
-    <div class="form-group">
         <label for="Username">Username</label>
         <input type="text" class="form-control form-control-lg" id="Username" name="Username" value="@Model.Username" readonly />
     </div>
@@ -43,58 +48,59 @@
     </div>
 </form>
 
+<script>
+    document.getElementById('addProfilePictureButton').addEventListener('click', function() {
+        var dropzone = document.getElementById('profilePictureDropzone');
+        dropzone.style.display = 'block';
+    });
+
+    Dropzone.options.profilePictureDropzone = {
+        url: '@Url.Action("UploadProfilePicture", "User")',
+        paramName: "file",
+        maxFilesize: 5,
+        acceptedFiles: "image/*",
+        dictDefaultMessage: "Arrastra y suelta una imagen o haz clic para cargar",
+        success: function (file, response) {
+        console.log(response);
+        if (response.success) {
+            alert("Imagen cargada con éxito");
+            const img = document.querySelector('.profile-img');
+            img.src = response.filePath;
+            img.onload = function() {
+                // Aquí puedes hacer algo después de que la imagen se haya cargado
+            };
+        } else {
+            alert("Error: " + response.message);
+        }
+    }
+
+    };
+</script>
+
 <style>
-    /* Estilos personalizados para mejorar la apariencia */
-
-    h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        color: #333;
+    .profile-img {
+        max-width: 300px;
+        max-height: 300px;
+        object-fit: cover;
     }
 
-    .form-control-lg {
-        font-size: 1.125rem;
+    .dropzone {
+        border: 2px dashed #007bff;
         padding: 10px;
+        margin-bottom: 20px;
+        width: 250px;
+        display: none;
     }
 
-    .form-check-input {
-        width: 1.25rem;
-        height: 1.25rem;
+    .rounded-circle {
+        border-radius: 20% !important;
     }
 
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: white;
-        font-size: 1.125rem;
-        padding: 12px 24px;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #004085;
-    }
-
-    .container {
-        max-width: 600px;
+    .dropzone.mx-auto {
         margin: 0 auto;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 30px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .form-group label {
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-    }
-
-    .form-check-label {
-        font-size: 1rem;
-    }
-
-    .my-4 {
-        margin-top: 2rem;
-        margin-bottom: 2rem;
+    #addProfilePictureButton {
+        margin-top: 10px;
     }
 </style>

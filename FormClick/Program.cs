@@ -20,6 +20,8 @@ namespace FormClick{
 
             builder.Host.UseSerilog();
 
+            builder.Services.AddScoped<FileUploadService>();
+
             builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
             builder.Services.AddLocalization(options =>{
