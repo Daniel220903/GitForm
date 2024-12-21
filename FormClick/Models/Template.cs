@@ -18,6 +18,7 @@ namespace FormClick.Models
         public User User { get; set; }
         public ICollection<Question> Questions { get; set; }
         public ICollection<Comment> Comments { get; set; }
+        public ICollection<Like> Likes { get; set; }
         public ICollection<Tag> Tags { get; set; }
         public ICollection<Response> Responses { get; set; }
         public ICollection<TemplateAccess> TemplateAccesses { get; set; }

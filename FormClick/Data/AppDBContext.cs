@@ -18,6 +18,7 @@ namespace FormClick.Data
         public DbSet<Template> Templates { get; set; }
         public DbSet<TemplateAccess> TemplateAccess { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +38,9 @@ namespace FormClick.Data
                 entity.HasMany(u => u.Comments)
                       .WithOne(c => c.User)
                       .HasForeignKey(c => c.UserId);
+                entity.HasMany(u => u.Likes)
+                      .WithOne(c => c.User)
+                      .HasForeignKey(c => c.UserId);
             });
 
             modelBuilder.Entity<Template>(entity =>
@@ -49,6 +53,9 @@ namespace FormClick.Data
                       .WithOne(q => q.Template)
                       .HasForeignKey(q => q.TemplateId);
                 entity.HasMany(t => t.Comments)
+                      .WithOne(c => c.Template)
+                      .HasForeignKey(c => c.TemplateId);
+                entity.HasMany(t => t.Likes)
                       .WithOne(c => c.Template)
                       .HasForeignKey(c => c.TemplateId);
                 entity.HasMany(t => t.Tags)
@@ -95,23 +102,18 @@ namespace FormClick.Data
             modelBuilder.Entity<Answer>(entity => {
                 entity.HasKey(a => a.Id);
 
-                // Relación muchos a uno: Un Answer pertenece a un Question
                 entity.HasOne(a => a.Question)
                       .WithMany(q => q.Answers)
                       .HasForeignKey(a => a.QuestionId)
-                      .OnDelete(DeleteBehavior.Restrict); // Opcional: Evitar la eliminación en cascada
-
-                // Relación opcional muchos a uno: Un Answer puede estar vinculado a un QuestionOption
+                      .OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(a => a.Option)
                       .WithMany()
                       .HasForeignKey(a => a.OptionId)
-                      .OnDelete(DeleteBehavior.Restrict); // Opcional: Evitar eliminación en cascada
-
-                // Relación muchos a uno: Un Answer pertenece a un Response
+                      .OnDelete(DeleteBehavior.Restrict); 
                 entity.HasOne(a => a.Response)
                       .WithMany(r => r.Answers)
                       .HasForeignKey(a => a.ResponseId)
-                      .OnDelete(DeleteBehavior.Restrict); // Opcional: Evitar la eliminación en cascada
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
 
@@ -139,6 +141,19 @@ namespace FormClick.Data
                       .WithMany(u => u.Comments)
                       .HasForeignKey(c => c.UserId)
                       .OnDelete(DeleteBehavior.Restrict); // Elimina la cascada
+            });
+
+            modelBuilder.Entity<Like>(entity =>
+            {
+                entity.HasKey(c => c.Id);
+                entity.HasOne(c => c.Template)
+                      .WithMany(t => t.Likes)
+                      .HasForeignKey(c => c.TemplateId)
+                      .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(c => c.User)
+                      .WithMany(u => u.Likes)
+                      .HasForeignKey(c => c.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Tag>(entity => {

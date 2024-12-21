@@ -3,62 +3,340 @@
 @using FormClick.Data
 @inject AppDBContext dbContext
 @inject IViewLocalizer Localizer
+@{
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+    var userIdClaim = claimsIdentity?.FindFirst("Id")?.Value;
+    int parsedClaim = int.TryParse(userIdClaim, out var idParsed) ? idParsed : 0;
+    bool isAdmin = dbContext.Users.Any(u => u.Id == parsedClaim && u.Admin);
+}
 
 <h2 class="mb-4">@Localizer["Welcome"]</h2>
 <h2 class="mb-4">Últimos Templates</h2>
 
-<div class="container">
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info" role="alert">
-            No se encontraron templates para mostrar.
-        </div>
-    }
-    else
-    {
-        @foreach (var template in Model)
-        {
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <h5 class="card-title">@template.Title</h5>
-                    <small class="text-muted">
-                        Publicado por <strong>@template.UserName</strong> el @template.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
-                        @if (template.IsOwner){
-                            <span class="ms-2">
-                                <i class="bi bi-person-fill-check text-success"></i>
-                                <span class="text-success">Owner</span>
-                            </span>
-                        }
-
-                    </small>
+<div class="container-fluid">
+    <div class="row">
+        <aside class="col-md-3">
+            <!-- Título de la sección -->
+            <h4 class="mb-3">Quiz Populares</h4>
+            <div class="list-group">
+                <div class="list-group-item">
+                    <img src="https://via.placeholder.com/50" alt="Creador 1">
+                    <div>
+                        <span class="title">Recuadro 1</span><br>
+                        <small>Creador: Juan Pérez</small>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">@template.Description</p>
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <a href="../api/Template/GetRespond/@template.TemplateId" class="btn btn-primary">Contestar</a>
-                        @{
-                            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-                            var userIdClaim = claimsIdentity?.FindFirst("Id")?.Value;
-                            int parsedClaim = int.TryParse(userIdClaim, out var idParsed) ? idParsed : 0;
-                            bool isAdmin = false;
-
-                            isAdmin = dbContext.Users.Any(u => u.Id == parsedClaim && u.Admin);
-                        }
-                        @if (template.IsOwner || isAdmin)
-                        {
-                            <a href="Template/GetRespond/@template.TemplateId" class="btn btn-secondary">Editar</a>
-                        }
-                        <div>
-                            <span class="me-3">
-                                <i class="bi bi-hand-thumbs-up"></i> 12 Likes
-                            </span>
-                            <span>
-                                <i class="bi bi-chat-dots"></i> 5 Comments
-                            </span>
-                        </div>
+                <div class="list-group-item">
+                    <img src="https://via.placeholder.com/50" alt="Creador 2">
+                    <div>
+                        <span class="title">Recuadro 2</span><br>
+                        <small>Creador: Ana Gómez</small>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <img src="https://via.placeholder.com/50" alt="Creador 3">
+                    <div>
+                        <span class="title">Recuadro 3</span><br>
+                        <small>Creador: Luis Martínez</small>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <img src="https://via.placeholder.com/50" alt="Creador 4">
+                    <div>
+                        <span class="title">Recuadro 4</span><br>
+                        <small>Creador: María Fernández</small>
                     </div>
                 </div>
             </div>
-        }
-    }
+        </aside>
+        <main class="col-md-9">
+            <div class="mb-4">
+                <input type="text" class="form-control" id="searchInput" placeholder="Buscar publicaciones...">
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-1 g-4" id="cardsContainer">
+                @if (!Model.Any()){
+                    <div class="alert alert-info" role="alert">
+                        No se encontraron templates para mostrar.
+                    </div>
+                } else {
+                    @foreach (var template in Model)
+                    {
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body d-flex">
+                                    <img src="https://picsum.photos/200/200" class="card-img-left me-3" alt="Publicación 1">
+
+                                    <div class="flex-grow-2" style="width: 70%;">
+                                        <h5 class="card-title">@template.Title</h5>
+                                        <p class="card-text description-scroll">@template.Description</p>
+
+                                        <p><strong>Creador:</strong> @template.UserName</p>
+                                        <p><strong>Fecha:</strong> @template.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                                    </div>
+                                    <div class="flex-grow-2" style="width: 30%; margin-top:-2%;">
+                                        <div class="category-tag">Historia</div>
+                                        @if (template.IsOwner){
+                                            <span class="ms-2">
+                                                <i class="bi bi-person-fill-check text-success"></i>
+                                                <span class="text-success">Owner</span>
+                                            </span>
+                                        }
+                                        <br/>
+                                        <span class="ms-2">
+                                            <a href="../api/Template/GetRespond/@template.TemplateId" style="margin-bottom: 2%;" class="btn btn-primary mt-2">Contestar</a>
+                                        </span>
+                                        <br/>
+                                        @if (template.IsOwner || isAdmin){
+                                            <span class="ms-2">
+                                                <a href="Template/GetRespond/@template.TemplateId" class="btn btn-secondary me-2">Editar</a>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="card-footer">
+                                    <div class="row text-center">
+                                        <div class="col-3 d-flex justify-content-center align-items-center">
+                                            <div class="owner-icon">J</div>
+                                        </div>
+                                        <div class="col-3 d-flex justify-content-center align-items-center">
+                                            <small><strong>Vez contestado:</strong> 150 veces</small>
+                                        </div>
+                                        <div class="col-3 d-flex justify-content-center align-items-center">
+                                            <button class="btn d-flex align-items-center like-button @(template.HasLiked == true ? "btn-primary" : "btn-outline-primary")"
+                                                    data-template-id="@template.TemplateId"
+                                                    data-has-liked="@template.HasLiked">
+                                                <i class="bi bi-hand-thumbs-up me-1"></i>
+                                            </button>
+                                            <span class="ms-2 like-counter" id="like-counter-@template.TemplateId">
+                                                @template.TotalLikes
+                                            </span>
+                                        </div>
+                                        <div class="col-3 d-flex justify-content-center align-items-center">
+                                            <small><strong>Comentarios:</strong> 150</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="footer-space"></div>
+        </main>
+    </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".like-button").forEach(button => {
+            button.addEventListener("click", async () => {
+                const templateId = button.dataset.templateId;
+                const hasLiked = button.dataset.hasLiked === "true";
+
+                try {
+                    const response = await fetch(`/Likes/ToggleLike/${templateId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+
+                        // Actualizar estado del botón
+                        button.dataset.hasLiked = !hasLiked;
+                        if (!hasLiked) {
+                            button.classList.remove("btn-outline-primary");
+                            button.classList.add("btn-primary");
+                        } else {
+                            button.classList.remove("btn-primary");
+                            button.classList.add("btn-outline-primary");
+                        }
+
+                        // Actualizar contador de likes
+                        const counterElement = document.querySelector(`#like-counter-${templateId}`);
+                        if (counterElement) {
+                            counterElement.textContent = result.totalLikes;
+                        }
+                    } else {
+                        console.error("Error al procesar la solicitud.");
+                    }
+                } catch (error) {
+                    console.error("Error en la solicitud AJAX:", error);
+                }
+            });
+        });
+    });
+
+</script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .navbar {
+        padding: 15px;
+    }
+
+    #searchInput {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .card img, .list-group-item img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .list-group-item {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .list-group-item img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+    }
+
+    .list-group-item .title {
+        font-weight: bold;
+    }.list-group-item img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+    }
+
+    .list-group-item .title {
+        font-weight: bold;
+    }
+
+    .card-body {
+        display: flex;
+        align-items: center;
+        height: 250px;
+    }
+
+    .card-body img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        margin-right: 20px;
+        border-radius: 8px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .card .card-body {
+        padding: 1.5rem;
+    }
+
+    .category-tag {
+        background-color: #f0ad4e;
+        color: white;
+        border-radius: 12px;
+        padding: 5px 10px;
+        font-size: 0.9rem;
+    }
+
+    .card-footer {
+        /* display: flex; */
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .owner-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #007bff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .info-block {
+        display: flex;
+        align-items: center;
+    }
+
+    .info-block .owner-icon,
+    .info-block .category-tag {
+        margin-right: 10px;
+    }
+
+    .footer-space {
+        margin-top: 80px;
+    }
+
+    footer {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+        border-top: 1px solid #ddd;
+    }
+
+    .footer-columns {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 0;
+    }
+
+    .footer-columns .footer-column {
+        width: 32%;
+        text-align: left;
+    }
+
+    .footer-columns .footer-column h5 {
+        margin-bottom: 15px;
+        font-size: 1.25rem;
+        /* color: #007bff; */
+    }
+
+    .footer-columns .footer-column p {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .footer-columns .footer-column ul {
+        padding-left: 0;
+        list-style: none;
+    }
+
+    .footer-columns .footer-column ul li {
+        margin-bottom: 10px;
+        text-decoration: none;
+    }
+
+    .description-scroll {
+        max-height: 90px;
+        overflow-y: auto;
+        word-wrap: break-word;
+        padding-right: 10px;
+    }
+
+
+</style>
+

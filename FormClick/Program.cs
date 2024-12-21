@@ -20,6 +20,8 @@ namespace FormClick{
 
             builder.Host.UseSerilog();
 
+            builder.Services.AddScoped<FileUploadService>();
+
             builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
             builder.Services.AddLocalization(options =>{
@@ -65,7 +67,7 @@ namespace FormClick{
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Access}/{action=Login}/{id?}");
+                pattern: "{controller=Access}/{action=Home}/{id?}");
 
             app.Run();
         }

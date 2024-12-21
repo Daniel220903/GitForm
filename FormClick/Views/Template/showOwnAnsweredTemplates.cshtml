@@ -2,62 +2,68 @@
 
 @{
     ViewData["Title"] = "Respuestas del formulario";
-    Console.Write(@Model);
 }
 
-<h2>@Model.Title</h2>
-<p>@Model.Description</p>
-<p><strong>Tema:</strong> @Model.Topic</p>
+<div class="container mt-4">
+    <h2 class="text-center">@Model.Title</h2>
+    <p class="text-center">@Model.Description</p>
+    <p class="text-center"><strong>Tema:</strong> @Model.Topic</p>
+    <p class="text-center"><strong>Resultado:</strong> @Model.Score</p>
 
-<div>
-    @foreach (var question in Model.Questions)
-    {
-        <div class="question-container">
-            <h4>@question.Text</h4>
+    <div class="mt-4">
+        @foreach (var question in Model.Questions){
+            var borderClass = question.IsCorrect ? "border-success border-3" : "border-danger border-3";
+            var iconClass = question.IsCorrect ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger";
 
-            @if (question.Type == "true-false")
-            {
-                <p><strong>Opciones:</strong></p>
-                <ul>
-                    <li style="@(question.SelectedAnswer == "Cierto" ? "text-decoration: underline; font-weight: bold;" : "")">
-                        Verdadero
-                        @(question.SelectedAnswer == "Verdadero" ? " (Seleccionada)" : "")
-                    </li>
-                    <li style="@(question.SelectedAnswer == "Falso" ? "text-decoration: underline; font-weight: bold;" : "")">
-                        Falso
-                        @(question.SelectedAnswer == "Falso" ? " (Seleccionada)" : "")
-                    </li>
-                </ul>
-                <p>
-                    <strong>¿Correcta?</strong>
-                    @(question.IsCorrect ? "Sí" : "No")
-                </p>
-            }
-            else if (question.Type == "multiple-choice")
-            {
-                <p><strong>Opciones:</strong></p>
-                <ul>
-                    @foreach (var option in question.Options)
+            <div class="card mb-3 @borderClass position-relative">
+                <div class="card-body">
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <i class="bi @iconClass" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h4 class="card-title">@question.Text</h4>
+
+                    @if (question.Type == "true-false")
                     {
-                        <li style="@(option.OptionId == question.SelectedOptionId ? "text-decoration: underline; font-weight: bold;" : "")">
-                            @option.Text
-                            @(option.OptionId == question.SelectedOptionId ? " (Seleccionada)" : "")
-                        </li>
+                        <p><strong>Opciones:</strong></p>
+                        <ul class="list-unstyled">
+                            <li style="@(question.SelectedAnswer == "Cierto" ? "font-weight: bold;" : "")">
+                                <span class="badge bg-primary">Verdadero</span>
+                                @if (question.SelectedAnswer == "Cierto")
+                                {
+                                    <span class="badge bg-dark ms-2">•</span>
+                                }
+                            </li>
+                            <li style="@(question.SelectedAnswer == "Falso" ? "font-weight: bold;" : "")">
+                                <span class="badge bg-danger">Falso</span>
+                                @if (question.SelectedAnswer == "Falso")
+                                {
+                                    <span class="badge bg-dark ms-2">•</span>
+                                }
+                            </li>
+                        </ul>
+                    } else if (question.Type == "multiple-choice") {
+                        <p><strong>Opciones:</strong></p>
+                        <ul class="list-unstyled">
+                            @foreach (var option in question.Options)
+                            {
+                                <li style="@(option.OptionId == question.SelectedOptionId ? "font-weight: bold;" : "")">
+                                    <span class="badge bg-info">@option.Text</span>
+                                    @if (option.OptionId == question.SelectedOptionId)
+                                    {
+                                        <span class="badge bg-dark ms-2">•</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    } else if (question.Type == "open") {
+                        <p><strong>Tu respuesta:</strong> @question.SelectedAnswer</p>
                     }
-                </ul>
-                <p>
-                    <strong>¿Correcta?</strong>
-                    @(question.IsCorrect ? "Sí" : "No")
-                </p>
-            }
-            else if (question.Type == "open")
-            {
-                <p><strong>Tu respuesta:</strong> @question.SelectedAnswer</p>
-                <p><strong>¿Correcta?</strong> @(question.IsCorrect ? "Sí" : "No")</p>
-            }
-        </div>
-        <hr />
-    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="http://localhost:5180/api/Template/showOwnTemplates" class="btn btn-secondary">Regresar</a>
+    </div>
 </div>
-<!-- Botón para regresar a showAnsweredTemplates -->
-<a href="http://localhost:5180/api/Template/showOwnTemplates" class="btn btn-secondary mt-3">Regresar</a>

@@ -25,7 +25,12 @@ namespace FormClick.Controllers{
             _appDbContext = appDbContext;
         }
 
-        [HttpGet]
+        public IActionResult Home(){
+            
+            return View();
+        }
+
+            [HttpGet]
         [AllowAnonymous]
         public IActionResult Login() {
             if (User.Identity!.IsAuthenticated) { return RedirectToAction("Index", "Home"); }

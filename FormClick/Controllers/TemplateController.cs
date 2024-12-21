@@ -278,45 +278,7 @@ namespace FormClick.Controllers{
             return Ok(new { message = "Plantilla creada con éxito" });
         }
 
-        //SE MUESTRA LA RESPUESTA DE OTROS USUARIOS A TU TEMPLATE CREADO.
-        [HttpGet("showOwnAnsweredTemplates/{responseId}")]
-        public async Task<IActionResult> showOwnAnsweredTemplates(int responseId){
-            var response = await _appDbContext.Responses.Where(t => t.Id == responseId).FirstOrDefaultAsync();
-            var template = await _appDbContext.Templates.Where(t => t.Id == response.TemplateId).FirstOrDefaultAsync();
-            var questions = await _appDbContext.Questions.Where(q => q.TemplateId == template.Id && q.DeletedAt == null).Include(q => q.Options).ToListAsync();
-
-            var answers = await _appDbContext.Answers.Where(a => a.Response.UserId == response.UserId).Where(a => a.Question.TemplateId == template.Id)
-                .Include(a => a.Question).Include(a => a.Option)
-                .ToListAsync();
-
-
-            var model = new ResponseVM
-            {
-                Title = template.Title,
-                Description = template.Description,
-                Topic = template.Topic,
-                Questions = questions.Select(q => new QuestionVM
-                {
-                    QuestionId = q.Id,
-                    Text = q.Text,
-                    Type = q.QuestionType,
-                    Options = q.QuestionType == "multiple-choice"
-                        ? q.Options.Select(o => new OptionVM
-                        {
-                            OptionId = o.Id,
-                            Text = o.OptionText
-                        }).ToList()
-                        : null,
-
-                    SelectedAnswer = answers.FirstOrDefault(a => a.QuestionId == q.Id)?.ResponseText,
-                    SelectedOptionId = answers.FirstOrDefault(a => a.QuestionId == q.Id)?.OptionId,
-
-                    IsCorrect = GetIsCorrect(q, answers.FirstOrDefault(a => a.QuestionId == q.Id))
-                }).ToList()
-            };
-
-            return View(model);
-        }
+        
 
 
 
@@ -325,11 +287,16 @@ namespace FormClick.Controllers{
         public async Task<IActionResult> AnswerTemplate(int templateId){
             var template = await _appDbContext.Templates.Where(t => t.Id == templateId).FirstOrDefaultAsync();
 
-            var questions = await _appDbContext.Questions.Where(q => q.TemplateId == templateId && q.DeletedAt == null).Include(q => q.Options).ToListAsync();
-
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
             var userIdClaim = claimsIdentity?.FindFirst("Id")?.Value;
             int userId = int.TryParse(userIdClaim, out var idParsed) ? idParsed : 0;
+
+            var response = await _appDbContext.Responses.Where(r => r.TemplateId == templateId)
+                .Where(r => r.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            var questions = await _appDbContext.Questions.Where(q => q.TemplateId == templateId && q.DeletedAt == null)
+                .Include(q => q.Options).ToListAsync();
 
             var answers = await _appDbContext.Answers.Where(a => a.Response.UserId == userId).Where(a => a.Question.TemplateId == templateId)
                 .Include(a => a.Question).Include(a => a.Option)
@@ -339,6 +306,7 @@ namespace FormClick.Controllers{
                 Title = template.Title,
                 Description = template.Description,
                 Topic = template.Topic,
+                Score = response.Score,
                 Questions = questions.Select(q => new QuestionVM {
                     QuestionId = q.Id,
                     Text = q.Text,
@@ -385,6 +353,7 @@ namespace FormClick.Controllers{
                 .Where(q => q.DeletedAt == null)
                 .Include(q => q.Answers)
                 .Include(q => q.Template)
+                //.Include(q => q.Res)
                 .ToListAsync();
 
             return View(responses);
@@ -420,6 +389,48 @@ namespace FormClick.Controllers{
             }).ToList();
 
             return View(answerTemplateVMs);
+        }
+
+        //SE MUESTRA LA RESPUESTA DE OTROS USUARIOS A TU TEMPLATE CREADO.
+        [HttpGet("showOwnAnsweredTemplates/{responseId}")]
+        public async Task<IActionResult> showOwnAnsweredTemplates(int responseId)
+        {
+            var response = await _appDbContext.Responses.Where(t => t.Id == responseId).FirstOrDefaultAsync();
+            var template = await _appDbContext.Templates.Where(t => t.Id == response.TemplateId).FirstOrDefaultAsync();
+            var questions = await _appDbContext.Questions.Where(q => q.TemplateId == template.Id && q.DeletedAt == null).Include(q => q.Options).ToListAsync();
+
+            var answers = await _appDbContext.Answers.Where(a => a.Response.UserId == response.UserId).Where(a => a.Question.TemplateId == template.Id)
+                .Include(a => a.Question).Include(a => a.Option)
+                .ToListAsync();
+
+
+            var model = new ResponseVM
+            {
+                Title = template.Title,
+                Description = template.Description,
+                Topic = template.Topic,
+                Score = response.Score,
+                Questions = questions.Select(q => new QuestionVM
+                {
+                    QuestionId = q.Id,
+                    Text = q.Text,
+                    Type = q.QuestionType,
+                    Options = q.QuestionType == "multiple-choice"
+                        ? q.Options.Select(o => new OptionVM
+                        {
+                            OptionId = o.Id,
+                            Text = o.OptionText
+                        }).ToList()
+                        : null,
+
+                    SelectedAnswer = answers.FirstOrDefault(a => a.QuestionId == q.Id)?.ResponseText,
+                    SelectedOptionId = answers.FirstOrDefault(a => a.QuestionId == q.Id)?.OptionId,
+
+                    IsCorrect = GetIsCorrect(q, answers.FirstOrDefault(a => a.QuestionId == q.Id))
+                }).ToList()
+            };
+
+            return View(model);
         }
 
         //Funcion para validar las respuestas correctas
