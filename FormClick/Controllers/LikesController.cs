@@ -14,11 +14,9 @@ namespace FormClick.Controllers
     public class LikesController : Controller
     {
         private readonly AppDBContext _appDbContext;
-        private readonly FileUploadService _fileUploadService;
 
-        public LikesController(AppDBContext appDbContext, FileUploadService fileUploadService)
+        public LikesController(AppDBContext appDbContext)
         {
-            _fileUploadService = fileUploadService;
             _appDbContext = appDbContext;
         }
 

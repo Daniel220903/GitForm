@@ -9,6 +9,7 @@ namespace FormClick.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Topic { get; set; }
+        public string picture { get; set; }
         public bool Public { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

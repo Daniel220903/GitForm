@@ -25,12 +25,47 @@ namespace FormClick.Controllers{
             _appDbContext = appDbContext;
         }
 
-        public IActionResult Home(){
-            
-            return View();
+        public IActionResult Home() {
+            var templates = _appDbContext.Templates
+                .Where(t => t.DeletedAt == null)
+                .OrderByDescending(t => t.CreatedAt)
+                .Select(t => new TemplateViewModel {
+                    TemplateId = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreatedAt = t.CreatedAt,
+                    ProfilePicture = t.User.ProfilePicture,
+                    Topic = t.Topic,
+                    UserId = t.User.Id,
+                    UserName = t.User.Username,
+                    TotalLikes = t.Likes.Count()
+                }).ToList();
+
+            var topLikedTemplates = _appDbContext.Templates
+                .Where(t => t.DeletedAt == null)
+                .OrderByDescending(t => t.Likes.Count())
+                .Take(5)
+                .Select(t => new TemplateViewModel {
+                    TemplateId = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreatedAt = t.CreatedAt,
+                    UserId = t.User.Id,
+                    ProfilePicture = t.User.ProfilePicture,
+                    UserName = t.User.Username,
+                    TotalLikes = t.Likes.Count()
+                }).ToList();
+
+            var viewModel = new HomeViewModel {
+                Templates = templates,
+                TopLikedTemplates = topLikedTemplates
+            };
+
+            return View(viewModel);
         }
 
-            [HttpGet]
+
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult Login() {
             if (User.Identity!.IsAuthenticated) { return RedirectToAction("Index", "Home"); }
@@ -148,8 +183,7 @@ namespace FormClick.Controllers{
         }
 
         [HttpGet]
-        public IActionResult Verify()
-        {
+        public IActionResult Verify() {
             if (TempData["UserId"] == null)
                 return RedirectToAction("Login", "Access");
 
@@ -159,8 +193,7 @@ namespace FormClick.Controllers{
 
 
         [HttpPost]
-        public async Task<IActionResult> Verify(int userId, int verificationCode)
-        {
+        public async Task<IActionResult> Verify(int userId, int verificationCode) {
             User? user = await _appDbContext.Users.FindAsync(userId);
 
             if (user == null || user.VerifiedCode != verificationCode) {
@@ -186,8 +219,7 @@ namespace FormClick.Controllers{
             };
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            AuthenticationProperties properties = new AuthenticationProperties()
-            {
+            AuthenticationProperties properties = new AuthenticationProperties() {
                 AllowRefresh = true,
             };
 
@@ -199,7 +231,6 @@ namespace FormClick.Controllers{
 
             return RedirectToAction("Index", "Home");
         }
-
 
         private void SendVerificationEmail(string toEmail, int verificationCode){
             var smtpSettings = new {
@@ -230,5 +261,93 @@ namespace FormClick.Controllers{
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Access");
         }
+
+        public class SearchRequest{
+            public string SearchTerm { get; set; }
+        }
+
+        [HttpPost]
+        public IActionResult Search([FromBody] SearchRequest request) {
+            try {
+                Console.WriteLine("Search Term: " + request.SearchTerm);
+
+                var templates = _appDbContext.Templates
+                    .Where(t => t.DeletedAt == null &&
+                        (t.Title.Contains(request.SearchTerm) ||
+                         t.Description.Contains(request.SearchTerm) ||
+                         t.Topic.Contains(request.SearchTerm) ||
+                         t.User.Username.Contains(request.SearchTerm) ||
+                         t.User.Email.Contains(request.SearchTerm)))
+                    .OrderByDescending(t => t.CreatedAt)
+                    .Take(30)
+                    .Select(t => new TemplateViewModel
+                    {
+                        TemplateId = t.Id,
+                        Title = t.Title,
+                        Description = t.Description,
+                        CreatedAt = t.CreatedAt,
+                        ProfilePicture = t.User.ProfilePicture,
+                        Topic = t.Topic,
+                        UserId = t.User.Id,
+                        UserName = t.User.Username,
+                        TotalLikes = t.Likes.Count()
+                    }).ToList();
+                Console.Write(templates);
+                return Json(templates);
+            } catch (Exception ex) {
+                Console.WriteLine("Error: " + ex.Message);
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+
+        public IActionResult LoggedSearch([FromBody] SearchRequest request)
+        {
+            try{
+                var userClaims = User.Identity as ClaimsIdentity;
+                var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+                var userId = int.Parse(userIdClaim);
+
+                var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
+
+                var templates = _appDbContext.Templates
+                    .Where(t => t.DeletedAt == null &&
+                        (t.Title.Contains(request.SearchTerm) ||
+                         t.Description.Contains(request.SearchTerm) ||
+                         t.Topic.Contains(request.SearchTerm) ||
+                         t.User.Username.Contains(request.SearchTerm) ||
+                         t.User.Email.Contains(request.SearchTerm)) &&
+                        (isAdmin
+                         || t.Public
+                         || t.TemplateAccesses.Any(ta => ta.UserId == userId)
+                         || t.UserId == userId) &&
+                        !_appDbContext.Responses.Any(r => r.TemplateId == t.Id && r.UserId == userId)
+                    )
+                    .OrderByDescending(t => t.CreatedAt)
+                    .Take(30)
+                    .Select(t => new TemplateViewModel
+                    {
+                        TemplateId = t.Id,
+                        Title = t.Title,
+                        Description = t.Description,
+                        CreatedAt = t.CreatedAt,
+                        ProfilePicture = t.User.ProfilePicture,
+                        Topic = t.Topic,
+                        UserId = t.User.Id,
+                        UserName = t.User.Username,
+                        TotalLikes = t.Likes.Count()
+                    }).ToList();
+
+                Console.WriteLine(templates);
+                return Json(templates);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+
     }
 }

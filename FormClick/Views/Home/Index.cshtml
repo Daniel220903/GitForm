@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FormClick.ViewModels.TemplateViewModel>
+﻿@model FormClick.ViewModels.HomeViewModel
 @using Microsoft.AspNetCore.Mvc.Localization
 @using FormClick.Data
 @inject AppDBContext dbContext
@@ -10,333 +10,420 @@
     bool isAdmin = dbContext.Users.Any(u => u.Id == parsedClaim && u.Admin);
 }
 
-<h2 class="mb-4">@Localizer["Welcome"]</h2>
-<h2 class="mb-4">Últimos Templates</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" type="text/css" href="~/css/Access/Home.css"> -->
+    <link rel="stylesheet" type="text/css" href="~/css/Access/Home.css">
+    <link rel="stylesheet" type="text/css" href="~/css/Access/footerHome.css">
 
-<div class="container-fluid">
-    <div class="row">
-        <aside class="col-md-3">
-            <!-- Título de la sección -->
-            <h4 class="mb-3">Quiz Populares</h4>
-            <div class="list-group">
-                <div class="list-group-item">
-                    <img src="https://via.placeholder.com/50" alt="Creador 1">
-                    <div>
-                        <span class="title">Recuadro 1</span><br>
-                        <small>Creador: Juan Pérez</small>
-                    </div>
-                </div>
-                <div class="list-group-item">
-                    <img src="https://via.placeholder.com/50" alt="Creador 2">
-                    <div>
-                        <span class="title">Recuadro 2</span><br>
-                        <small>Creador: Ana Gómez</small>
-                    </div>
-                </div>
-                <div class="list-group-item">
-                    <img src="https://via.placeholder.com/50" alt="Creador 3">
-                    <div>
-                        <span class="title">Recuadro 3</span><br>
-                        <small>Creador: Luis Martínez</small>
-                    </div>
-                </div>
-                <div class="list-group-item">
-                    <img src="https://via.placeholder.com/50" alt="Creador 4">
-                    <div>
-                        <span class="title">Recuadro 4</span><br>
-                        <small>Creador: María Fernández</small>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        <main class="col-md-9">
-            <div class="mb-4">
-                <input type="text" class="form-control" id="searchInput" placeholder="Buscar publicaciones...">
-            </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-            <div class="row row-cols-1 row-cols-md-1 g-4" id="cardsContainer">
-                @if (!Model.Any()){
-                    <div class="alert alert-info" role="alert">
-                        No se encontraron templates para mostrar.
-                    </div>
-                } else {
-                    @foreach (var template in Model)
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- <script src="~/js/Access/Home.js" asp-append-version="true"></script>  -->
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Diseño con Bootstrap y jQuery</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+    <style>
+        .new-comments-container {
+            border-top: 1px solid black !important;
+            background-color: #2cc48c;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 class="mb-4">@Localizer["Welcome"]</h2>
+    <br />
+    <br />
+
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-3">
+                <span class="mb-3 popular-template">Templates Populares: </span>
+                <div class="list-group">
+                    @foreach (var template in Model.TopLikedTemplates)
                     {
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body d-flex">
-                                    <img src="https://picsum.photos/200/200" class="card-img-left me-3" alt="Publicación 1">
-
-                                    <div class="flex-grow-2" style="width: 70%;">
-                                        <h5 class="card-title">@template.Title</h5>
-                                        <p class="card-text description-scroll">@template.Description</p>
-
-                                        <p><strong>Creador:</strong> @template.UserName</p>
-                                        <p><strong>Fecha:</strong> @template.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
-                                    </div>
-                                    <div class="flex-grow-2" style="width: 30%; margin-top:-2%;">
-                                        <div class="category-tag">Historia</div>
-                                        @if (template.IsOwner){
-                                            <span class="ms-2">
-                                                <i class="bi bi-person-fill-check text-success"></i>
-                                                <span class="text-success">Owner</span>
-                                            </span>
-                                        }
-                                        <br/>
-                                        <span class="ms-2">
-                                            <a href="../api/Template/GetRespond/@template.TemplateId" style="margin-bottom: 2%;" class="btn btn-primary mt-2">Contestar</a>
-                                        </span>
-                                        <br/>
-                                        @if (template.IsOwner || isAdmin){
-                                            <span class="ms-2">
-                                                <a href="Template/GetRespond/@template.TemplateId" class="btn btn-secondary me-2">Editar</a>
-                                            </span>
-                                        }
-                                    </div>
-                                </div>
-
-                                <div class="card-footer">
-                                    <div class="row text-center">
-                                        <div class="col-3 d-flex justify-content-center align-items-center">
-                                            <div class="owner-icon">J</div>
-                                        </div>
-                                        <div class="col-3 d-flex justify-content-center align-items-center">
-                                            <small><strong>Vez contestado:</strong> 150 veces</small>
-                                        </div>
-                                        <div class="col-3 d-flex justify-content-center align-items-center">
-                                            <button class="btn d-flex align-items-center like-button @(template.HasLiked == true ? "btn-primary" : "btn-outline-primary")"
-                                                    data-template-id="@template.TemplateId"
-                                                    data-has-liked="@template.HasLiked">
-                                                <i class="bi bi-hand-thumbs-up me-1"></i>
-                                            </button>
-                                            <span class="ms-2 like-counter" id="like-counter-@template.TemplateId">
-                                                @template.TotalLikes
-                                            </span>
-                                        </div>
-                                        <div class="col-3 d-flex justify-content-center align-items-center">
-                                            <small><strong>Comentarios:</strong> 150</small>
-                                        </div>
-                                    </div>
-                                </div>
-
-
+                        <div class="list-group-item">
+                            <img src="@template.ProfilePicture" alt="Creador @template.UserName">
+                            <div>
+                                <span class="title">@template.Title</span><br>
+                                <small class="creator-small">Creador:</small> @template.UserName<br>
+                                <small class="mb-1 creator-small">Likes:</small> @template.TotalLikes
                             </div>
                         </div>
                     }
-                }
-            </div>
+                </div>
+            </aside>
+            <main class="col-md-9">
+                <div class="mb-4 d-flex align-items-center">
+                    <form asp-controller="Access" asp-action="LoggedSearch" method="post" class="d-flex search-template-form" style="width: 100%;">
+                        <input type="text" class="form-control me-2" id="searchInput" name="searchTerm" placeholder="Buscar publicaciones...">
+                        <button class="btn btn-primary" id="searchButton" type="submit" style="margin-right:10px;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="btn btn-primary" id="deleteButton">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
 
-            <div class="footer-space"></div>
-        </main>
-    </div>
-</div>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".like-button").forEach(button => {
-            button.addEventListener("click", async () => {
-                const templateId = button.dataset.templateId;
-                const hasLiked = button.dataset.hasLiked === "true";
 
-                try {
-                    const response = await fetch(`/Likes/ToggleLike/${templateId}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
+                </div>
 
-                    if (response.ok) {
-                        const result = await response.json();
-
-                        // Actualizar estado del botón
-                        button.dataset.hasLiked = !hasLiked;
-                        if (!hasLiked) {
-                            button.classList.remove("btn-outline-primary");
-                            button.classList.add("btn-primary");
-                        } else {
-                            button.classList.remove("btn-primary");
-                            button.classList.add("btn-outline-primary");
-                        }
-
-                        // Actualizar contador de likes
-                        const counterElement = document.querySelector(`#like-counter-${templateId}`);
-                        if (counterElement) {
-                            counterElement.textContent = result.totalLikes;
-                        }
-                    } else {
-                        console.error("Error al procesar la solicitud.");
+                <div class="row row-cols-1 row-cols-md-1 g-4" id="cardsContainer">
+                    @if (!Model.Templates.Any())
+                    {
+                        <div class="alert alert-info" role="alert">
+                            No se encontraron templates para mostrar.
+                        </div>
                     }
-                } catch (error) {
-                    console.error("Error en la solicitud AJAX:", error);
-                }
+                    else
+                    {
+                        <div id="templatesContainer">
+                        </div>
+
+                        <div id="paginationContainer" class="text-center mt-4">
+                            <button id="loadMoreButton" class="btn btn-primary">Ver más</button>
+                        </div>
+                    }
+                </div>
+                <div class="footer-space"></div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var search = false;
+        const templates = @Html.Raw(Json.Serialize(Model.Templates));
+        let currentPage = 1;
+        const templatesPerPage = 10;
+
+        function displayTemplates(page, templateFunction) {
+            console.log('AQUI SI ENTRA?');
+            if (!templateFunction) return;
+
+            const totalPages = Math.ceil(templateFunction.length / templatesPerPage);
+            const start = (page - 1) * templatesPerPage;
+            const end = start + templatesPerPage;
+            const templatesToDisplay = templateFunction.slice(start, end);
+            const templatesContainer = document.getElementById('templatesContainer');
+
+            templatesContainer.innerHTML = '';
+
+            templatesToDisplay.forEach(template => {
+                const templateCard = `
+                                    <div class="col card-container">
+                                        <div class="card">
+                                            <div class="card-body d-flex">
+                                                <img src="https://picsum.photos/200/200" class="card-img-left me-3" alt="Publicación 1">
+                                                <div class="flex-grow-2" style="width: 70%;">
+                                                    <span class="card-title">${template.title}</span>
+                                                    <p class="card-text description-scroll">${template.description}</p>
+                                                    <p>
+                                                        ${new Date(template.createdAt).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit', hour12: true })} ·
+                                                        ${new Date(template.createdAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                    </p>
+                                                </div>
+                                                <div class="flex-grow-2 d-flex flex-column align-items-center justify-content-center" style="width: 25%; margin-top: -6%;">
+                                                    <span class="ms-2">
+                                                        <a href="#" style="margin-bottom: 2%; background-color: #6a3800; border:none;" class="btn btn-primary mt-2">${template.topic}</a>
+                                                    </span>
+                                                    <br />
+                                                    <span class="ms-2" style="margin-top:-20px;">
+                                                        <a href="#" style="margin-bottom: 2%; margin-top: -20px;" class="btn btn-primary mt-2 answer-template">Contestar</a>
+                                                    </span>
+                                                    <br />
+                                                </div>
+                                            </div>
+
+                                            <div class="card-footer">
+                                                <div class="row text-center">
+                                                    <div class="col-2 d-flex justify-content-center align-items-center">
+                                                        <div class="owner-icon">
+                                                            <img src="${template.profilePicture}" style="border-radius:50%;">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2 d-flex justify-content-center align-items-center" style="margin-left: -20px; margin-right: 15px;">
+                                                        <div class="owner-icon">
+                                                            ${template.userName}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2 d-flex justify-content-center align-items-center card-footer-items">
+                                                        <button class="btn d-flex align-items-center like-button ${template.hasLiked ? 'btn-primary' : 'btn-outline-primary'}"
+                                                                data-template-id="${template.templateId}"
+                                                                data-has-liked="${template.hasLiked}">
+                                                            <i class="bi bi-hand-thumbs-up me-1"></i>
+                                                        </button>
+                                                        <span class="ms-2 like-counter" id="like-counter-${template.templateId}">
+                                                            ${template.totalLikes}
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="col-2 d-flex justify-content-center align-items-center card-footer-new-comment">
+                                                            <button class="btn d-flex align-items-center btn btn-outline-primary btn-sm mt-3 toggle-comment"data-template-id="${template.templateId}">
+                                                            Nuevo comentario
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="col-2 d-flex justify-content-center align-items-center card-footer-items card-footer-new-comment">
+                                                        <button class="btn btn-outline-secondary btn-sm mt-3 show-comments" data-template-id="${template.templateId}">
+                                                            Ver comentarios
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="comments-container-${template.templateId}" class="comments-container" style="display: none;"></div>
+
+                                            <div class="new-comments-container" id="comment-section-${template.templateId}" style="display: none;">
+                                                <textarea class="form-control mb-2" id="comment-textarea-${template.templateId}" placeholder="Escribe un comentario..."></textarea>
+                                                <button class="btn btn-primary btn-sm save-comment" data-template-id="${template.templateId}">Guardar comentario</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>`;
+                templatesContainer.innerHTML += templateCard;
+            });
+
+            const paginationContainer = document.getElementById('paginationContainer');
+            paginationContainer.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.classList.add('btn', 'btn-outline-primary', 'page-button');
+                pageButton.textContent = i;
+                pageButton.setAttribute('data-page', i);
+                pageButton.addEventListener('click', function () {
+                    currentPage = i;
+                    displayTemplates(currentPage, templateFunction);
+                    updatePagination();
+                });
+                paginationContainer.appendChild(pageButton);
+            }
+
+            updatePagination();
+
+            document.querySelectorAll('.toggle-comment').forEach(button => {
+                console.log('hasta aqui chii?');
+                button.addEventListener('click', () => {
+                    console.log('HASTA AQUI SI LLEGA SIN TRONAR');
+                    const templateId = button.dataset.templateId;
+                    console.log(`Template ID obtenido: ${templateId}`);
+                    const commentSection = document.getElementById(`comment-section-${templateId}`);
+                    console.log('HASTA AQUI SI LLEGA SIN TRONAR3');
+
+                    if (commentSection) {
+                        commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+                        console.log('HASTA AQUI SI LLEGA SIN TRONAR4');
+                    } else {
+                        console.error(`No se encontró el elemento con ID: comment-section-${templateId}`);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.save-comment').forEach(button => {
+                button.addEventListener('click', () => {
+                    const templateId = button.dataset.templateId;
+                    const commentText = document.getElementById(`comment-textarea-${templateId}`).value;
+                    const payload = {
+                        templateId: templateId,
+                        commentText: commentText,
+                    };
+                    fetch('/Comment/Add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                document.getElementById(`comment-textarea-${templateId}`).value = '';
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+
+            document.querySelectorAll(".like-button").forEach(button => {
+                button.addEventListener("click", async () => {
+                    const templateId = button.dataset.templateId;
+                    const hasLiked = button.dataset.hasLiked === "true";
+
+                    try {
+                        const response = await fetch(`/Likes/ToggleLike/${templateId}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+
+                            button.dataset.hasLiked = !hasLiked;
+                            if (!hasLiked) {
+                                button.classList.remove("btn-outline-primary");
+                                button.classList.add("btn-primary");
+                            } else {
+                                button.classList.remove("btn-primary");
+                                button.classList.add("btn-outline-primary");
+                            }
+
+                            const counterElement = document.querySelector(`#like-counter-${templateId}`);
+                            if (counterElement) {
+                                counterElement.textContent = result.totalLikes;
+                            }
+                        } else {
+                            console.error("Error al procesar la solicitud.");
+                        }
+                    } catch (error) {
+                        console.error("Error en la solicitud AJAX:", error);
+                    }
+                });
+            });
+            console.log('en teoria aqui si ptm');
+            document.querySelectorAll('.answer-template').forEach(button => {
+                button.addEventListener('click', () => {
+                    const isLoggedIn = false;
+                    if (!isLoggedIn) {
+                        Toastify({
+                            text: "Ocupas estar logeado para responder",
+                            duration: 3500,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                            stopOnFocus: true
+                        }).showToast();
+                    } else {
+                        const templateId = button.dataset.templateId;
+                        Toastify({
+                            text: "Respondiendo al template...",
+                            duration: 2500,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                            stopOnFocus: true
+                        }).showToast();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.show-comments').forEach(button => {
+                button.addEventListener('click', () => {
+                    const templateId = button.dataset.templateId;
+                    const commentsContainer = document.getElementById(`comments-container-${templateId}`);
+
+                    if (commentsContainer.style.display === 'none') {
+                        button.classList.add('btn-white');
+                        button.classList.remove('btn-outline-secondary');
+                        button.classList.add('btn-secondary');
+
+                        fetch(`/Comment/GetComments?templateId=${templateId}`)
+                            .then(response => response.json())
+                            .then(comments => {
+                                if (comments.length === 0) {
+                                    commentsContainer.innerHTML = '<p class="no-comment">No comments yet</p>';
+                                } else {
+                                    commentsContainer.innerHTML = comments
+                                        .map(c => `
+                                                            <div class="comment">
+                                                                <p class="comment-header">
+                                                                    <img src="${c.profilePicture}" alt="Profile Picture" class="comment-profile-picture">
+                                                                    <strong class="comment-username">${c.userName}</strong>
+                                                                    <span class="comment-date">${new Date(c.createdAt).toLocaleString('es-MX', {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true,
+                                            day: '2-digit',
+                                            month: 'short',
+                                            year: 'numeric'
+                                        })}</span>
+                                                                </p>
+                                                                <p class="comment-text">${c.commentText}</p>
+                                                            </div>
+                                                        `).join('');
+                                }
+                                commentsContainer.style.display = 'block';
+                            })
+                            .catch(error => console.error('Error:', error));
+                    } else {
+                        button.classList.remove('btn-white');
+                        button.classList.add('btn-outline-secondary');
+                        button.classList.remove('btn-secondary');
+                        commentsContainer.style.display = 'none';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.show-comments').forEach(button => {
+                const templateId = button.dataset.templateId;
+                const commentsContainer = document.getElementById(`comments-container-${templateId}`);
+                commentsContainer.style.display = commentsContainer.innerHTML.trim() ? 'block' : 'none';
+            });
+
+        }
+
+        function updatePagination() {
+            const pageButtons = document.querySelectorAll('.page-button');
+            pageButtons.forEach(button => {
+                const page = button.getAttribute('data-page');
+                button.classList.toggle('active', parseInt(page) === currentPage);
+            });
+        }
+
+        if (search == false) {
+            displayTemplates(currentPage, templates);
+        }
+
+        document.getElementById('deleteButton').addEventListener('click', function (event) {
+            document.getElementById('searchInput').value = '';
+            displayTemplates(currentPage, templates);
+        });
+
+        $(".search-template-form").submit(function (event) {
+            currentPage = 1;
+            event.preventDefault();
+            var searchTerm = $("#searchInput").val();
+
+            $.ajax({
+                url: '/Access/LoggedSearch',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ searchTerm: searchTerm }),
+                success: function (response) {
+                    const searchTemplate = response;
+                    displayTemplates(currentPage, searchTemplate);
+                },
+                error: function (xhr, status, error) { }
             });
         });
     });
-
 </script>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-    }
-
-    .navbar {
-        padding: 15px;
-    }
-
-    #searchInput {
-        width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-
-    .card img, .list-group-item img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-    }
-
-    .list-group-item {
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .list-group-item img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin-right: 15px;
-    }
-
-    .list-group-item .title {
-        font-weight: bold;
-    }.list-group-item img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin-right: 15px;
-    }
-
-    .list-group-item .title {
-        font-weight: bold;
-    }
-
-    .card-body {
-        display: flex;
-        align-items: center;
-        height: 250px;
-    }
-
-    .card-body img {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        margin-right: 20px;
-        border-radius: 8px;
-    }
-
-    .card-title {
-        font-size: 1.25rem;
-    }
-
-    .card-text {
-        font-size: 1rem;
-        color: #555;
-    }
-
-    .card .card-body {
-        padding: 1.5rem;
-    }
-
-    .category-tag {
-        background-color: #f0ad4e;
-        color: white;
-        border-radius: 12px;
-        padding: 5px 10px;
-        font-size: 0.9rem;
-    }
-
-    .card-footer {
-        /* display: flex; */
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-    }
-
-    .owner-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background-color: #007bff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        font-weight: bold;
-        margin-right: 10px;
-    }
-
-    .info-block {
-        display: flex;
-        align-items: center;
-    }
-
-    .info-block .owner-icon,
-    .info-block .category-tag {
-        margin-right: 10px;
-    }
-
-    .footer-space {
-        margin-top: 80px;
-    }
-
-    footer {
-        background-color: #f8f9fa;
-        padding: 20px;
-        text-align: center;
-        border-top: 1px solid #ddd;
-    }
-
-    .footer-columns {
-        display: flex;
-        justify-content: space-between;
-        padding: 20px 0;
-    }
-
-    .footer-columns .footer-column {
-        width: 32%;
-        text-align: left;
-    }
-
-    .footer-columns .footer-column h5 {
-        margin-bottom: 15px;
-        font-size: 1.25rem;
-        /* color: #007bff; */
-    }
-
-    .footer-columns .footer-column p {
-        font-size: 0.9rem;
-        color: #6c757d;
-    }
-
-    .footer-columns .footer-column ul {
-        padding-left: 0;
-        list-style: none;
-    }
-
-    .footer-columns .footer-column ul li {
-        margin-bottom: 10px;
-        text-decoration: none;
-    }
-
-    .description-scroll {
-        max-height: 90px;
-        overflow-y: auto;
-        word-wrap: break-word;
-        padding-right: 10px;
-    }
-
-
-</style>
 
