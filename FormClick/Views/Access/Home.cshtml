@@ -1,338 +1,425 @@
 ﻿@{
     Layout = null;
 }
+@model FormClick.ViewModels.HomeViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@using FormClick.Data
+@inject AppDBContext dbContext
+@inject IViewLocalizer Localizer
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" type="text/css" href="~/css/Access/Home.css"> -->
+    <link rel="stylesheet" type="text/css" href="~/css/Access/Home.css">
+    <link rel="stylesheet" type="text/css" href="~/css/Access/footerHome.css">
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- <script src="~/js/Access/Home.js" asp-append-version="true"></script>  -->
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Diseño con Bootstrap y jQuery</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
 
-        .navbar {
-            padding: 15px;
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        #searchInput {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .card img, .list-group-item img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-        }
-
-        .list-group-item {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .list-group-item img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        .list-group-item .title {
-            font-weight: bold;
-        }.list-group-item img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        .list-group-item .title {
-            font-weight: bold;
-        }
-
-        .card-body {
-            display: flex;
-            align-items: center;
-            height: 200px;
-        }
-
-        .card-body img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            margin-right: 20px;
-            border-radius: 8px;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-        }
-
-        .card-text {
-            font-size: 1rem;
-            color: #555;
-        }
-
-        .card .card-body {
-            padding: 1.5rem;
-        }
-
-        .category-tag {
-            background-color: #f0ad4e;
-            color: white;
-            border-radius: 12px;
-            padding: 5px 10px;
-            font-size: 0.9rem;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-        }
-
-        .owner-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #007bff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .info-block {
-            display: flex;
-            align-items: center;
-        }
-
-        .info-block .owner-icon,
-        .info-block .category-tag {
-            margin-right: 10px;
-        }
-
-        .footer-space {
-            margin-top: 80px;
-        }
-
-        footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            border-top: 1px solid #ddd;
-        }
-
-        .footer-columns {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px 0;
-        }
-
-        .footer-columns .footer-column {
-            width: 32%;
-            text-align: left;
-        }
-
-        .footer-columns .footer-column h5 {
-            margin-bottom: 15px;
-            font-size: 1.25rem;
-            /* color: #007bff; */
-        }
-
-        .footer-columns .footer-column p {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-
-        .footer-columns .footer-column ul {
-            padding-left: 0;
-            list-style: none;
-        }
-
-        .footer-columns .footer-column ul li {
-            margin-bottom: 10px;
-            text-decoration: none;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- Menú en la parte superior -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+   <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Logo</a>
+            <a class="navbar-brand" href="#">
+                <img src="~/img/logo.png" alt="Logo" style="height: 40px;">
+            </a>
             <div class="d-flex">
-                
-                <!-- <button class="btn btn-outline-primary me-2" id="loginButton">Login</button> -->
                 <a class="btn btn-outline-primary me-2" asp-controller="Access" asp-action="Login">Log in</a>
-                <!-- <button class="btn btn-outline-secondary" id="signupButton">Sign Up</button> -->
-                <a class="btn btn-outline-secondary" asp-action="SignUp" asp-controller="Access">Sign U</a>
+                <a class="btn btn-outline-secondary" asp-action="SignUp" asp-controller="Access">Sign Up</a>
             </div>
         </div>
     </nav>
     <br />
     <br />
-    <!-- Cuerpo de la página -->
     <div class="container-fluid">
         <div class="row">
-            <!-- Aside izquierdo -->
             <aside class="col-md-3">
-                <!-- Título de la sección -->
-                <h4 class="mb-3">Quiz Populares</h4>
+                <span class="mb-3 popular-template">Templates Populares: </span>
                 <div class="list-group">
-                    <div class="list-group-item">
-                        <img src="https://via.placeholder.com/50" alt="Creador 1">
-                        <div>
-                            <span class="title">Recuadro 1</span><br>
-                            <small>Creador: Juan Pérez</small>
+                    @foreach (var template in Model.TopLikedTemplates) {
+                        <div class="list-group-item">
+                            <img src="@template.ProfilePicture" alt="Creador @template.UserName">
+                            <div>
+                                <span class="title">@template.Title</span><br>
+                                <small class="creator-small">Creador:</small> @template.UserName<br>
+                                <small class="mb-1 creator-small">Likes:</small> @template.TotalLikes
+                            </div>
                         </div>
-                    </div>
-                    <div class="list-group-item">
-                        <img src="https://via.placeholder.com/50" alt="Creador 2">
-                        <div>
-                            <span class="title">Recuadro 2</span><br>
-                            <small>Creador: Ana Gómez</small>
-                        </div>
-                    </div>
-                    <div class="list-group-item">
-                        <img src="https://via.placeholder.com/50" alt="Creador 3">
-                        <div>
-                            <span class="title">Recuadro 3</span><br>
-                            <small>Creador: Luis Martínez</small>
-                        </div>
-                    </div>
-                    <div class="list-group-item">
-                        <img src="https://via.placeholder.com/50" alt="Creador 4">
-                        <div>
-                            <span class="title">Recuadro 4</span><br>
-                            <small>Creador: María Fernández</small>
-                        </div>
-                    </div>
+                    }
                 </div>
             </aside>
-
-            <!-- Área principal con publicaciones -->
             <main class="col-md-9">
-                <!-- Buscador encima de las tarjetas -->
-                <div class="mb-4">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Buscar publicaciones...">
+                <div class="mb-4 d-flex align-items-center">
+                    <form asp-controller="Access" asp-action="Search" method="post" class="d-flex search-template-form" style="width: 100%;">
+                        <input type="text" class="form-control me-2" id="searchInput" name="searchTerm" placeholder="Buscar publicaciones...">
+                        <button class="btn btn-primary" id="searchButton" type="submit" style="margin-right:10px;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="btn btn-primary" id="deleteButton">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
+
+
                 </div>
 
-                <!-- Tarjetas de publicaciones -->
                 <div class="row row-cols-1 row-cols-md-1 g-4" id="cardsContainer">
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body">
-                                <img src="https://picsum.photos/200/200" class="card-img-left" alt="Publicación 1">
-                                <div>
-                                    <h5 class="card-title">Publicación 1</h5>
-                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi.</p>
-                                    <p><strong>Creador:</strong> Juan Pérez</p>
-                                    <p><strong>Fecha:</strong> 18 de diciembre de 2024</p>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="info-block">
-                                    <div class="owner-icon">J</div>
-                                    <small><strong>Vez contestado:</strong> 150 veces</small>
-                                </div>
-                                <div class="category-tag">Historia</div>
-                            </div>
+                    @if (!Model.Templates.Any()) {
+                        <div class="alert alert-info" role="alert">
+                            No se encontraron templates para mostrar.
                         </div>
-                    </div>
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body">
-                                <img src="https://picsum.photos/200/200?random=2" class="card-img-left" alt="Publicación 2">
-                                <div>
-                                    <h5 class="card-title">Publicación 2</h5>
-                                    <p class="card-text">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
-                                    <p><strong>Creador:</strong> Ana Gómez</p>
-                                    <p><strong>Fecha:</strong> 17 de diciembre de 2024</p>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="info-block">
-                                    <div class="owner-icon">A</div>
-                                    <small><strong>Vez contestado:</strong> 120 veces</small>
-                                </div>
-                                <div class="category-tag">Ciencia</div>
-                            </div>
+                    } else {
+                        <div id="templatesContainer">
                         </div>
-                    </div>
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body">
-                                <img src="https://picsum.photos/200/200?random=3" class="card-img-left" alt="Publicación 3">
-                                <div>
-                                    <h5 class="card-title">Publicación 3</h5>
-                                    <p class="card-text">Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.</p>
-                                    <p><strong>Creador:</strong> Luis Martínez</p>
-                                    <p><strong>Fecha:</strong> 16 de diciembre de 2024</p>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="info-block">
-                                    <div class="owner-icon">L</div>
-                                    <small><strong>Vez contestado:</strong> 95 veces</small>
-                                </div>
-                                <div class="category-tag">Arte</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Espacio antes del footer -->
+                        <div id="paginationContainer" class="text-center mt-4">
+                            <button id="loadMoreButton" class="btn btn-primary">Ver más</button>
+                        </div>
+                    }
+                </div>
                 <div class="footer-space"></div>
             </main>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-columns">
-            <div class="footer-column">
-                <h5>Sobre Nosotros</h5>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus laoreet.</p>
-            </div>
-            <div class="footer-column">
-                <h5>Enlaces Rápidos</h5>
-                <ul>
-                    <li><a href="#" style="color: inherit; text-decoration: none;">Inicio</a></li>
-                    <li><a href="#" style="color: inherit; text-decoration: none;">Blog</a></li>
-                    <li><a href="#" style="color: inherit; text-decoration: none;">Contáctanos</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h5>Contacto</h5>
-                <p>Correo: contacto@miempresa.com</p>
-                <p>Teléfono: +1 234 567 890</p>
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col">
+                    <h4>company</h4>
+                    <ul>
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">our services</a></li>
+                        <li><a href="#">privacy policy</a></li>
+                        <li><a href="#">affiliate program</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>get help</h4>
+                    <ul>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">shipping</a></li>
+                        <li><a href="#">returns</a></li>
+                        <li><a href="#">order status</a></li>
+                        <li><a href="#">payment options</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>online shop</h4>
+                    <ul>
+                        <li><a href="#">watch</a></li>
+                        <li><a href="#">bag</a></li>
+                        <li><a href="#">shoes</a></li>
+                        <li><a href="#">dress</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>follow us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
             </div>
         </div>
-        <p>&copy; 2024 Mi Proyecto Web. Todos los derechos reservados.</p>
     </footer>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $("#searchInput").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-                $("#cardsContainer .col").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        document.addEventListener('DOMContentLoaded', function () {
+            var search = false;
+            const templates = @Html.Raw(Json.Serialize(Model.Templates));
+            let currentPage = 1;
+            const templatesPerPage = 10;
+
+            function displayTemplates(page, templateFunction) {
+                console.log(templateFunction, "aaaoaoaoao");
+                if (!templateFunction) return; 
+
+                const totalPages = Math.ceil(templateFunction.length / templatesPerPage);
+                const start = (page - 1) * templatesPerPage;
+                const end = start + templatesPerPage;
+                const templatesToDisplay = templateFunction.slice(start, end);
+                const templatesContainer = document.getElementById('templatesContainer');
+
+                templatesContainer.innerHTML = '';
+
+                templatesToDisplay.forEach(template => {
+                    const templateCard = `
+                            <div class="col card-container">
+                                <div class="card">
+                                    <div class="card-body d-flex">
+                                        <img src="https://picsum.photos/200/200" class="card-img-left me-3" alt="Publicación 1">
+                                        <div class="flex-grow-2" style="width: 70%;">
+                                            <span class="card-title">${template.title}</span>
+                                            <p class="card-text description-scroll">${template.description}</p>
+                                            <p>
+                                                ${new Date(template.createdAt).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit', hour12: true })} ·
+                                                ${new Date(template.createdAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </p>
+                                        </div>
+                                        <div class="flex-grow-2 d-flex flex-column align-items-center justify-content-center" style="width: 25%; margin-top: -6%;">
+                                            <span class="ms-2">
+                                                <a href="#" style="margin-bottom: 2%; background-color: #6a3800; border:none;" class="btn btn-primary mt-2">${template.topic}</a>
+                                            </span>
+                                            <br />
+                                            <span class="ms-2" style="margin-top:-20px;">
+                                                <a href="#" style="margin-bottom: 2%; margin-top: -20px;" class="btn btn-primary mt-2 answer-template">Contestar</a>
+                                            </span>
+                                            <br />
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="row text-center">
+                                            <div class="col-2 d-flex justify-content-center align-items-center">
+                                                <div class="owner-icon">
+                                                    <img src="${template.profilePicture}" style="border-radius:50%;">
+                                                </div>
+                                            </div>
+                                            <div class="col-2 d-flex justify-content-center align-items-center" style="margin-left: -20px; margin-right: 15px;">
+                                                <div class="owner-icon">
+                                                    ${template.userName}
+                                                </div>
+                                            </div>
+                                            <div class="col-2 d-flex justify-content-center align-items-center card-footer-items">
+                                                <button class="btn d-flex align-items-center like-button ${template.hasLiked ? 'btn-primary' : 'btn-outline-primary'}"
+                                                        data-template-id="${template.templateId}"
+                                                        data-has-liked="${template.hasLiked}">
+                                                    <i class="bi bi-hand-thumbs-up me-1"></i>
+                                                </button>
+                                                <span class="ms-2 like-counter" id="like-counter-${template.templateId}">
+                                                    ${template.totalLikes}
+                                                </span>
+                                            </div>
+
+                                            <div class="col-2 d-flex justify-content-center align-items-center card-footer-new-comment">
+                                                <button class="btn d-flex align-items-center btn btn-outline-primary btn-sm mt-3 toggle-comment" data-template-id="${template.templateId}">
+                                                    Nuevo comentario
+                                                </button>
+                                            </div>
+
+                                            <div class="col-2 d-flex justify-content-center align-items-center card-footer-items card-footer-new-comment">
+                                                <button class="btn btn-outline-secondary btn-sm mt-3 show-comments" data-template-id="${template.templateId}">
+                                                    Ver comentarios
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="comments-container-${template.templateId}" class="comments-container" style="display: none;"></div>
+                                </div>
+                            </div>
+                            <br>`;
+                    templatesContainer.innerHTML += templateCard;
+                });
+
+                const paginationContainer = document.getElementById('paginationContainer');
+                paginationContainer.innerHTML = '';
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.classList.add('btn', 'btn-outline-primary', 'page-button');
+                    pageButton.textContent = i;
+                    pageButton.setAttribute('data-page', i);
+                    pageButton.addEventListener('click', function () {
+                        currentPage = i;
+                        displayTemplates(currentPage, templateFunction);
+                        updatePagination();
+                    });
+                    paginationContainer.appendChild(pageButton);
+                }
+
+                updatePagination();
+
+                document.querySelectorAll('.toggle-comment').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const isLoggedIn = false;
+                        if (!isLoggedIn) {
+                            Toastify({
+                                text: "Ocupas estar logeado para comentar",
+                                duration: 3500,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                                stopOnFocus: true
+                            }).showToast();
+                        } else {
+                            const templateId = button.dataset.templateId;
+                            const commentSection = document.getElementById(`comment-section-${templateId}`);
+                            commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.like-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const isLoggedIn = false;
+                        if (!isLoggedIn) {
+                            Toastify({
+                                text: "Ocupas estar logeado para dar like",
+                                duration: 3500,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                                stopOnFocus: true
+                            }).showToast();
+                        } else {
+                            const templateId = button.dataset.templateId;
+                            Toastify({
+                                text: "¡Gracias por tu like!",
+                                duration: 2500,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                                stopOnFocus: true
+                            }).showToast();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.answer-template').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const isLoggedIn = false;
+                        if (!isLoggedIn) {
+                            Toastify({
+                                text: "Ocupas estar logeado para responder",
+                                duration: 3500,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                                stopOnFocus: true
+                            }).showToast();
+                        } else {
+                            const templateId = button.dataset.templateId;
+                            Toastify({
+                                text: "Respondiendo al template...",
+                                duration: 2500,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                                stopOnFocus: true
+                            }).showToast();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.show-comments').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const templateId = button.dataset.templateId;
+                        const commentsContainer = document.getElementById(`comments-container-${templateId}`);
+
+                        if (commentsContainer.style.display === 'none') {
+                            button.classList.add('btn-white');
+                            button.classList.remove('btn-outline-secondary');
+                            button.classList.add('btn-secondary');
+
+                            fetch(`/Comment/GetComments?templateId=${templateId}`)
+                                .then(response => response.json())
+                                .then(comments => {
+                                    if (comments.length === 0) {
+                                        commentsContainer.innerHTML = '<p class="no-comment">No comments yet</p>';
+                                    } else {
+                                        commentsContainer.innerHTML = comments
+                                            .map(c => `
+                                                    <div class="comment">
+                                                        <p class="comment-header">
+                                                            <img src="${c.profilePicture}" alt="Profile Picture" class="comment-profile-picture">
+                                                            <strong class="comment-username">${c.userName}</strong>
+                                                            <span class="comment-date">${new Date(c.createdAt).toLocaleString('es-MX', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: true,
+                                                day: '2-digit',
+                                                month: 'short',
+                                                year: 'numeric'
+                                            })}</span>
+                                                        </p>
+                                                        <p class="comment-text">${c.commentText}</p>
+                                                    </div>
+                                                `).join('');
+                                    }
+                                    commentsContainer.style.display = 'block';
+                                })
+                                .catch(error => console.error('Error:', error));
+                        } else {
+                            button.classList.remove('btn-white');
+                            button.classList.add('btn-outline-secondary');
+                            button.classList.remove('btn-secondary');
+                            commentsContainer.style.display = 'none';
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.show-comments').forEach(button => {
+                    const templateId = button.dataset.templateId;
+                    const commentsContainer = document.getElementById(`comments-container-${templateId}`);
+                    commentsContainer.style.display = commentsContainer.innerHTML.trim() ? 'block' : 'none';
+                });
+            }
+
+            function updatePagination() {
+                const pageButtons = document.querySelectorAll('.page-button');
+                pageButtons.forEach(button => {
+                    const page = button.getAttribute('data-page');
+                    button.classList.toggle('active', parseInt(page) === currentPage);
+                });
+            }
+
+            if (search == false) {
+                displayTemplates(currentPage, templates);
+            }
+
+            document.getElementById('deleteButton').addEventListener('click', function (event) {
+                document.getElementById('searchInput').value = '';
+                displayTemplates(currentPage, templates);
+            });
+
+            $(".search-template-form").submit(function (event) {
+                currentPage = 1;
+                event.preventDefault();
+                var searchTerm = $("#searchInput").val();
+
+                $.ajax({
+                    url: '/Access/Search',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ searchTerm: searchTerm }),
+                    success: function (response) {
+                        const searchTemplate = response;
+                        displayTemplates(currentPage, searchTemplate);
+                    },
+                    error: function (xhr, status, error) { }
                 });
             });
         });
     </script>
+
 </body>
 </html>

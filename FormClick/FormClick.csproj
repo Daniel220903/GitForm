@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Home\**" />
+    <Compile Remove="wwwroot\js\NewFolder1\**" />
+    <Compile Remove="wwwroot\js\NewFolder\**" />
+    <Content Remove="wwwroot\Home\**" />
+    <Content Remove="wwwroot\js\NewFolder1\**" />
+    <Content Remove="wwwroot\js\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\Home\**" />
+    <EmbeddedResource Remove="wwwroot\js\NewFolder1\**" />
+    <EmbeddedResource Remove="wwwroot\js\NewFolder\**" />
+    <None Remove="wwwroot\Home\**" />
+    <None Remove="wwwroot\js\NewFolder1\**" />
+    <None Remove="wwwroot\js\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\img\login.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>

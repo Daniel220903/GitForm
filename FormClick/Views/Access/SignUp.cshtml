@@ -2,105 +2,94 @@
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign up</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <style>
-        .main-container {
-            display: flex;
-            height: 100vh;
-        }
-
-        .image-container {
-            flex-basis: 50%;
-            height: 100%;
-        }
-
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .form-container {
-            flex-basis: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .card-header {
-            background-color: #007bff;
-            color: white;
-            border-radius: 10px 10px 0 0;
-        }
-    </style>
+	<title>Animated Login Form</title>
+	<link rel="stylesheet" type="text/css" href="~/css/login.css">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+	<script src="https://kit.fontawesome.com/a81368914c.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+	<img class="wave" src="~/img/wave.png">
+	<div class="container">
+		<div class="img">
+			<img src="~/img/bg.svg">
+		</div>
+		<div class="login-content">
+			<form asp-controller="Access" asp-action="SignUp" method="post">
+				<img src="~/img/avatar.svg">
+				<h2 class="title">Welcome</h2>
+                 @if (ViewData["Mensaje"] != null){
+                    <div class="alert alert-danger" role="alert">
+                        @ViewData["Mensaje"]
+                    </div>
+                }
 
-    <div class="main-container">
-
-        <!-- Imagen (izquierda) -->
-        <div class="image-container">
-            <img src="https://cdn.pixabay.com/photo/2024/04/30/04/36/chess-8729265_1280.png" alt="Imagen de ejemplo">
-        </div>
-
-        <!-- Formulario de SignUp (derecha) -->
-        <div class="form-container">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h4>Sign Up</h4>
-                </div>
-                <div class="card-body">
-                    <form asp-controller="Access" asp-action="SignUp" method="post">
-                        <input class="form-control mb-3" type="text" placeholder="Username" required asp-for="Username" />
-                        <input class="form-control mb-3" type="text" placeholder="Name" required asp-for="Name" />
-                        <input class="form-control mb-3" type="text" placeholder="Email" required asp-for="Email" />
-                        <input class="form-control mb-3" type="password" placeholder="Password" required asp-for="Password" />
-                        <input class="form-control mb-3" type="password" placeholder="Confirm Password" required asp-for="ConfirmPassword" />
-                        <select class="form-control mb-3" asp-for="Language">
-                            <option value="en">English</option>
-                            <option value="esp">Español</option>
-                        </select>
-                        <div class="d-grid gap-2 mb-3">
-                            <button class="btn btn-primary">Sign Up</button>
+                @{
+                    if (TempData["Mensaje"] != null){
+                        <div class="alert alert-success">
+                            @TempData["Mensaje"]
                         </div>
-
-                        @if (ViewData["Mensaje"] != null)
-                        {
-                            <div class="alert alert-danger" role="alert">
-                                @ViewData["Mensaje"]
-                            </div>
-                        }
-                        @if (TempData["Mensaje"] != null)
-                        {
-                            <div class="alert alert-success" role="alert">
-                                @TempData["Mensaje"]
-                            </div>
-                        }
-
-                        Do you already have an account? <a asp-controller="Access" asp-action="Login">Log in</a>
-                    </form>
+                    }
+                }
+           		<div class="input-div one">
+           		   <div class="i">
+           		   		<i class="fas fa-user"></i>
+           		   </div>
+           		   <div class="div">
+           		   		<h5>Username</h5>
+           		   		<input type="text" id="Username" name="Username" required class="input" asp-for="Username">
+           		   </div>
+           		</div>
+                
+                <div class="input-div one">
+                   <div class="i">
+ 		   		        <i class="fas fa-user"></i>
+                   </div>
+                   <div class="div">
+ 		   		        <h5>Name</h5>
+ 		   		        <input type="text" id="Name" name="Name" required class="input" asp-for="Name">
+                   </div>
                 </div>
-            </div>
+
+                <div class="input-div one">
+                   <div class="i">
+ 		   		        <i class="fas fa-user"></i>
+                   </div>
+                   <div class="div">
+ 		   		        <h5>Email</h5>
+ 		   		        <input type="email" id="Email" name="Email" required class="input" asp-for="Email">
+                   </div>
+                </div>
+
+           		<div class="input-div pass">
+           		   <div class="i"> 
+           		    	<i class="fas fa-lock"></i>
+           		   </div>
+           		   <div class="div">
+           		    	<h5>Password</h5>
+           		    	<input type="password" id="Password" name="Password" required class="input">
+            	   </div>
+            	</div>
+
+                <div class="input-div pass">
+           		   <div class="i"> 
+           		    	<i class="fas fa-lock"></i>
+           		   </div>
+           		   <div class="div">
+           		    	<h5>Confirm Password</h5>
+           		    	<input type="password" id="ConfirmPassword" name="ConfirmPassword" required class="input" required asp-for="ConfirmPassword">
+            	   </div>
+            	</div>
+                <input type="hidden" id="Language" name="ConfiLanguagermPassword" value="en" asp-for="Language">
+                
+            	<input type="submit" class="btn" value="Login">
+                <a asp-controller="Access" asp-action="Login">Log in</a>
+            </form>
         </div>
-
     </div>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="~/js/login.js"></script>
 </body>
 </html>
