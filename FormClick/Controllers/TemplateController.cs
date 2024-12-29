@@ -17,10 +17,12 @@ namespace FormClick.Controllers{
     public class TemplateController : Controller{
         private readonly AppDBContext _appDbContext;
         private readonly ILogger<TemplateController> _logger;
+        private readonly S3Service _s3Service;
 
-        public TemplateController(AppDBContext appDbContext, ILogger<TemplateController> logger){
+        public TemplateController(AppDBContext appDbContext, ILogger<TemplateController> logger, S3Service s3Service){
             _appDbContext = appDbContext;
             _logger = logger;
+            _s3Service = new S3Service();
         }
 
         [HttpGet]
@@ -296,8 +298,6 @@ namespace FormClick.Controllers{
             return View();
         }
 
-
-        //Se muestra la respuesta del template del usuario logeado
         [HttpGet("AnswerTemplate/{templateId}")]
         public async Task<IActionResult> AnswerTemplate(int templateId){
             var template = await _appDbContext.Templates.Where(t => t.Id == templateId).FirstOrDefaultAsync();
@@ -344,7 +344,6 @@ namespace FormClick.Controllers{
             return View(model);
         }
 
-        //OBTENER LISTA DE USUARIOS PARA MOSTRAR EN LOS PERMISOS
         [HttpGet("getUsers")]
         public async Task<IActionResult> getUsers(){
             var userList = _appDbContext.Users.Where(t => t.DeletedAt == null).OrderByDescending(t => t.CreatedAt)
@@ -356,7 +355,6 @@ namespace FormClick.Controllers{
             return Json(userList);
         }
 
-        //Se muestran los templates que haz contestado
         [HttpGet("showAnsweredTemplates")]
         public async Task<IActionResult> ShowAnsweredTemplates()
         {
@@ -403,9 +401,6 @@ namespace FormClick.Controllers{
             return View(responseViewModels);
         }
 
-
-
-        //Se muestran los templates que haz creado
         [HttpGet("showOwnTemplates")]
         public async Task<IActionResult> showOwnTemplates() {
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
@@ -444,9 +439,6 @@ namespace FormClick.Controllers{
             return View(answerTemplateVMs);
         }
 
-
-
-        //SE MUESTRA LA RESPUESTA DE OTROS USUARIOS A TU TEMPLATE CREADO.
         [HttpGet("showOwnAnsweredTemplates/{responseId}")]
         public async Task<IActionResult> showOwnAnsweredTemplates(int responseId) {
             var response = await _appDbContext.Responses.Where(t => t.Id == responseId).Include(t => t.User).FirstOrDefaultAsync();
@@ -491,35 +483,19 @@ namespace FormClick.Controllers{
             return View(model);
         }
 
-        [HttpPost("UploadProfilePicture")]
-        public async Task<IActionResult> UploadProfilePicture(IFormFile file) {
+        [HttpPost("UploadFile")]
+        public async Task<IActionResult> UploadFile([FromForm] IFormFile file) {
             if (file == null || file.Length == 0)
-                return BadRequest(new { success = false, message = "No se recibió ningún archivo." });
+                return BadRequest("File not selected");
 
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var extension = Path.GetExtension(file.FileName).ToLower();
-            if (!allowedExtensions.Contains(extension))
-                return BadRequest(new { success = false, message = "Formato de archivo no permitido." });
+            var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+            var contentType = file.ContentType;
 
-            // Validar el tamaño del archivo (ejemplo: máximo 5 MB)
-            //long maxFileSize = 5 * 1024 * 1024; // 5 MB
-            //if (file.Length > maxFileSize)
-            //    return BadRequest(new { success = false, message = "El archivo es demasiado grande. Máximo 5 MB." });
+            using var stream = file.OpenReadStream();
 
-            var fileName = $"{Guid.NewGuid()}{extension}";
+            var fileUrl = await _s3Service.UploadFileAsync(stream, fileName, contentType, "ImageTemplate");
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/temporaryFiles", fileName);
-
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var fileUrl = $"/uploads/temporaryFiles/{fileName}";
-
-            return Ok(new { success = true, filePath = fileUrl });
+            return Json(new { success = true, filePath = fileUrl, subio = "asas" });
         }
 
         //Funcion para validar las respuestas correctas
@@ -562,7 +538,6 @@ namespace FormClick.Controllers{
         public string Answer { get; set; }
         public int UserId { get; set; }
     }
-
     public class TemplateRequest{
         public string Title { get; set; }
         public string Topic { get; set; }
@@ -572,7 +547,6 @@ namespace FormClick.Controllers{
         public List<Quest> Quests { get; set; }
         public List<string> SelectedUsers { get; set; }
     }
-
     public class Quest{
         public string Title { get; set; }
         public string Type { get; set; }

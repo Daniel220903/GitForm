@@ -59,7 +59,7 @@
     });
 
     Dropzone.options.profilePictureDropzone = {
-        url: '@Url.Action("UploadProfilePicture", "User")',
+        url: '@Url.Action("UploadFile", "User")',
         paramName: "file",
         maxFilesize: 5,
         acceptedFiles: "image/*",
@@ -70,9 +70,7 @@
             alert("Succesfully charged");
             const img = document.querySelector('.profile-img');
             img.src = response.filePath;
-            img.onload = function() {
-                // Aquí puedes hacer algo después de que la imagen se haya cargado
-            };
+            img.onload = function() { };
         } else {
             alert("Error: " + response.message);
         }
