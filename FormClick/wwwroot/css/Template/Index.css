@@ -1,0 +1,150 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    /* padding: 20px; */
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+label {
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"], textarea, select {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px 0;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.quest {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.quest-index {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.options-container {
+    margin-top: 10px;
+}
+
+.multiple-options {
+    margin-top: 10px;
+}
+
+.option-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.option-container input[type="text"] {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    display: none;
+    background-color: #fff;
+}
+
+.user-table th, .user-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.user-table th {
+    background-color: #f4f4f4;
+}
+
+#quests-container {
+    margin-top: 20px;
+}
+
+#template-title, #template-topic, #template-description {
+    display: block;
+    width: 100%;
+}
+
+#save-and-exit {
+    background-color: #28a745;
+}
+
+#save-and-exit:hover {
+    background-color: #218838;
+}
+
+#create-template {
+    background-color: #ffc107;
+}
+
+#create-template:hover {
+    background-color: #e0a800;
+}
+
+#add-quest {
+    background-color: #17a2b8;
+}
+
+#add-quest:hover {
+    background-color: #138496;
+}
+
+
+.profile-img {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.dropzone {
+    border: 2px dashed #007bff;
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 250px;
+    display: none;
+}
+
+.rounded-circle {
+    border-radius: 20% !important;
+}
+
+.dropzone.mx-auto {
+    margin: 0 auto;
+}
+
+#addProfilePictureButton {
+    margin-top: 10px;
+}

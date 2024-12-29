@@ -6,6 +6,7 @@
         public string Description { get; set; }
         public string Topic { get; set; }
         public float Score { get; set; }
+        public string Username { get; set; }
         public List<QuestionVM> Questions { get; set; }
     }
 

@@ -1,207 +1,137 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario Personalizable</title>
+    
+    <title>Create template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="~/css/Template/try.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-           /* padding: 20px; */
-            background-color: #f5f5f5;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"], textarea, select {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px 0;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .quest {
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .quest-index {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .options-container {
-            margin-top: 10px;
-        }
-
-        .multiple-options {
-            margin-top: 10px;
-        }
-
-        .option-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .option-container input[type="text"] {
-            flex: 1;
-            margin-right: 10px;
-        }
-
-        .user-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            display: none;
-            background-color: #fff;
-        }
-
-        .user-table th, .user-table td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-
-        .user-table th {
-            background-color: #f4f4f4;
-        }
-
-        #quests-container {
-            margin-top: 20px;
-        }
-
-        #template-title, #template-topic, #template-description {
-            display: block;
-            width: 100%;
-        }
-
-        #save-and-exit {
-            background-color: #28a745;
-        }
-
-        #save-and-exit:hover {
-            background-color: #218838;
-        }
-
-        #create-template {
-            background-color: #ffc107;
-        }
-
-        #create-template:hover {
-            background-color: #e0a800;
-        }
-
-        #add-quest {
-            background-color: #17a2b8;
-        }
-
-        #add-quest:hover {
-            background-color: #138496;
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="container">
 
-    <h1>Crear Plantilla</h1>
+        <div class="login-content">
+            <div style="width: 100%;">
+                <h1>@Localizer["Create quiz"]:</h1>
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <h5>@Localizer["Title of the quiz"]:</h5>
+                        <input type="text" name="title" id="template-title" class="input">
+                    </div>
+                </div>
 
-    <label for="template-title">Título de la plantilla:</label>
-    <input type="text" id="template-title" placeholder="Escribe un título..." style="width: 100%; margin-bottom: 10px;">
+                <div class="input-div one div-dropzone">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <h5>@Localizer["Image"]:</h5>
+                        <div class="dropzone mx-auto" id="profilePictureDropzone" style="display: block;"></div>
+                    </div>
+                </div>
 
-    <label for="template-topic">Tópico:</label>
-    <input type="text" id="template-topic" placeholder="Escribe el tópico del formulario..." style="width: 100%; margin-bottom: 10px;">
 
-    <label for="template-description">Descripción:</label>
-    <textarea id="template-description" placeholder="Escribe una descripción para el formulario..." style="width: 100%; margin-bottom: 10px;" rows="3"></textarea>
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="div">
+                        <h5>@Localizer["Theme"]:</h5>
+                        <input type="text" id="template-topic" name="topic" class="input">
+                    </div>
+                </div>
 
-    <div>
-        <label>
-            <input type="checkbox" id="template-public" checked>
-            Hacer público
-        </label>
+                <div class="input-div one">
+                    <label for="template-description"></label>
+                    <textarea id="template-description" placeholder="@Localizer["Write a description for the form..."]" rows="3"></textarea>
+                </div>
+
+                <div>
+                    <label>
+                        <input type="checkbox" id="template-public" checked>
+                        @Localizer["Make public"]
+                    </label>
+                </div>
+                <br />
+
+                <table id="user-table" class="user-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Select"]</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div id="quests-container"></div>
+
+                <button id="add-quest" class="btn add-quest">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button id="create-template" class="btn">@Localizer["Create quiz"]</button>
+            </div>
+        </div>
     </div>
-
-    <table id="user-table" class="user-table">
-        <thead>
-            <tr>
-                <th>Seleccionar</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <div id="quests-container"></div>
-    
-    <button id="add-quest">Agregar Pregunta</button>
-    <!--  <button id="save-and-exit">Guardar y Salir</button> -->
-    <button id="create-template">Crear Plantilla</button>
-
     <script>
+        const maxNumberQuest = "@Localizer["You have reached the maximum of 50 questions."]";
+        const selectOption = "@Localizer["Select an option"]";
+        const Question = "@Localizer["Question"]";
+        const writeYourQuestion = "@Localizer["Write your question..."]";
+        const questionType = "@Localizer["Question Type"]";
+        const multipleChoice = "@Localizer["Multiple Choice"]";
+        const trueFalse = "@Localizer["True/False"]";
+        const openQuest = "@Localizer["Open-ended answer"]";
+        const deleteQuestion = "@Localizer["Delete Question"]";
+        const options4 = "@Localizer["Options (maximum 4)"]";
+        const addOption = "@Localizer["Add Option"]";
+        const True = "@Localizer["True"]";
+        const False = "@Localizer["False"]";
+        const expectedAnswer = "@Localizer["Expected answer"]";
+        const max4options = "@Localizer["You can only add a maximum of 4 options."]";
+        const templateCreated = "@Localizer["Template created successfully."]";
+
         let questCount = 0;
+        let uploadedImageUrl = "";
 
         const updateQuestIndices = () => {
             $("#quests-container .quest").each(function (index) {
-                $(this).find(".quest-index").text(`Pregunta ${index + 1}`);
+                $(this).find(".quest-index").text(`${Question} ${index + 1}`);
             });
         };
 
         const createQuest = () => {
             if (questCount >= 50) {
-                alert("Has alcanzado el máximo de 50 preguntas.");
+                alert(maxNumberQuest);
                 return;
             }
 
             questCount++;
 
             const questHtml = `
-                <div class="quest" id="quest-${questCount}">
-                    <div class="quest-index">Pregunta ${questCount}</div>
-                    <label>Pregunta:</label>
-                    <input type="text" class="quest-title" placeholder="Escribe tu pregunta..." style="width: 100%; margin-bottom: 10px;">
+                    <div class="quest" id="quest-${questCount}">
+                        <div class="quest-index">${Question} ${questCount}</div>
+                        <label>${Question}:</label>
+                        <input type="text" class="quest-title" placeholder="${writeYourQuestion}" style="width: 100%; margin-bottom: 10px;">
 
-                    <label>Tipo de Pregunta:</label>
-                    <select class="quest-type" style="width: 100%; margin-bottom: 10px;">
-                        <option value="" selected disabled>Seleccione una opción</option>
-                        <option value="multiple-choice">Opción Múltiple</option>
-                        <option value="true-false">Cierto/Falso</option>
-                        <option value="open">Respuesta Abierta</option>
-                    </select>
+                        <label>${questionType}:</label>
+                        <select class="quest-type" style="width: 100%; margin-bottom: 10px;">
+                            <option value="" selected disabled> ${selectOption}</option>
+                            <option value="multiple-choice">${multipleChoice}</option>
+                            <option value="true-false">${trueFalse}</option>
+                            <option value="open">${openQuest}</option>
+                        </select>
 
-                    <div class="options-container" style="display: none;"></div>
-                    <button class="remove-quest">Eliminar Pregunta</button>
-                </div>
-            `;
+                        <div class="options-container" style="display: none;"></div>
+                        <button class="remove-quest">${deleteQuestion}</button>
+                    </div>
+                `;
 
             $("#quests-container").append(questHtml);
             updateQuestIndices();
@@ -215,26 +145,28 @@
             optionsContainer.empty();
 
             if (type === "multiple-choice") {
+                console.log('SE TRADUCE??', questionType);
                 optionsContainer.append(`
-                    <label>Opciones (máximo 4):</label>
-                    <div class="multiple-options">
-                        <input type="text" class="option" placeholder="Opción 1">
-                        <input type="radio" name="correct-${questCount}" class="correct-answer-selector"> Correcta
-                    </div>
-                    <button class="add-option">Agregar Opción</button>
-                `);
+                        <label>${options4}:</label>
+                        <div class="multiple-options">
+                            <input type="text" class="option">
+                            <input type="radio" name="correct-${questCount}" class="correct-answer-selector">
+                            <i class="fas fa-check-circle correct-icon palomita"></i>
+                        </div>
+                        <button class="add-option">${addOption}</button>
+                    `);
             } else if (type === "true-false") {
                 optionsContainer.append(`
-                    <div>
-                        <input type="radio" name="correct-${questCount}" value="Cierto" class="correct-answer-selector"> Cierto
-                        <input type="radio" name="correct-${questCount}" value="Falso" class="correct-answer-selector"> Falso
-                    </div>
-                `);
+                        <div>
+                            <input type="radio" name="correct-${questCount}" value="Cierto" class="correct-answer-selector"> ${True}
+                            <input type="radio" name="correct-${questCount}" value="Falso" class="correct-answer-selector"> ${False}
+                        </div>
+                    `);
             } else if (type === "open") {
                 optionsContainer.append(`
-                    <label>Respuesta esperada:</label>
-                    <input type="text" class="expected-answer" placeholder="Respuesta esperada...">
-                `);
+                        <label>${expectedAnswer}:</label>
+                        <input type="text" class="expected-answer" placeholder="${expectedAnswer}...">
+                    `);
             }
 
             optionsContainer.show();
@@ -244,16 +176,17 @@
             const optionsDiv = $(this).siblings(".multiple-options");
 
             if (optionsDiv.find(".option").length >= 4) {
-                alert("Solo puedes agregar un máximo de 4 opciones.");
+                alert(max4options);
                 return;
             }
 
             optionsDiv.append(`
-                <div class="option-container">
-                    <input type="text" class="option" placeholder="Nueva opción">
-                    <input type="radio" name="correct-${questCount}" class="correct-answer-selector"> Correcta
-                </div>
-            `);
+                    <div class="option-container">
+                        <input type="text" class="option" placeholder="Nueva opción">
+                        <input type="radio" name="correct-${questCount}" class="correct-answer-selector">
+                        <i class="fas fa-check-circle correct-icon palomita"></i>
+                    </div>
+                `);
         });
 
         $(document).on("click", ".remove-quest", function () {
@@ -263,51 +196,52 @@
         });
 
         const gatherTemplateData = () => {
-        const title = $("#template-title").val();
-        const topic = $("#template-topic").val();
-        const description = $("#template-description").val();
-        const isPublic = $("#template-public").is(":checked");
-        const quests = [];
-        const selectedUsers = [];
+            const title = $("#template-title").val();
+            const topic = $("#template-topic").val();
+            const description = $("#template-description").val();
+            const isPublic = $("#template-public").is(":checked");
+            const quests = [];
+            const selectedUsers = [];
 
-        $(".quest").each(function () {
-            const questTitle = $(this).find(".quest-title").val();
-            const questType = $(this).find(".quest-type").val();
-            let correctAnswer = null;
-            let options = null;
-            let expectedAnswer = null;
+            $(".quest").each(function () {
+                const questTitle = $(this).find(".quest-title").val();
+                const questType = $(this).find(".quest-type").val();
+                let correctAnswer = null;
+                let options = null;
+                let expectedAnswer = null;
 
-            if (questType === "multiple-choice") {
-                options = [];
-                $(this).find(".multiple-options .option").each(function () {
-                    options.push($(this).val());
+                if (questType === "multiple-choice") {
+                    options = [];
+                    $(this).find(".multiple-options .option").each(function () {
+                        options.push($(this).val());
+                    });
+                    correctAnswer = $(this).find(".multiple-options input.correct-answer-selector:checked").siblings(".option").val();
+                } else if (questType === "true-false") {
+                    correctAnswer = $(this).find(".correct-answer-selector:checked").val();
+                    expectedAnswer = correctAnswer;
+                } else if (questType === "open") {
+                    expectedAnswer = $(this).find(".expected-answer").val();
+                }
+
+                quests.push({
+                    title: questTitle,
+                    type: questType,
+                    options,
+                    correctAnswer,
+                    expectedAnswer,
                 });
-                correctAnswer = $(this).find(".multiple-options input.correct-answer-selector:checked").siblings(".option").val();
-            } else if (questType === "true-false") {
-                correctAnswer = $(this).find(".correct-answer-selector:checked").val();
-                expectedAnswer = correctAnswer;
-            } else if (questType === "open") {
-                expectedAnswer = $(this).find(".expected-answer").val();
-            }
-
-            quests.push({
-                title: questTitle,
-                type: questType,
-                options,
-                correctAnswer,
-                expectedAnswer,
             });
-        });
 
-        $("#user-table tbody input[type='checkbox']:checked").each(function () {
-            selectedUsers.push($(this).val());
-        });
+            $("#user-table tbody input[type='checkbox']:checked").each(function () {
+                selectedUsers.push($(this).val());
+            });
 
-        return { title, topic, description, isPublic, quests, selectedUsers };
-    };
+            return { title, topic, description, isPublic, quests, selectedUsers };
+        };
 
         $("#create-template").click(async () => {
             const templateData = gatherTemplateData();
+            templateData.picture = uploadedImageUrl;
             console.log("Datos enviados al backend:", JSON.stringify(templateData, null, 2));
 
             try {
@@ -321,7 +255,7 @@
 
                 if (response.ok) {
                     const result = await response.json();
-                    alert("Plantilla creada con éxito.");
+                    alert(templateCreated);
                     window.location.href = "/Home/Index";
                 } else {
                     alert("Error al crear la plantilla. Por favor, intenta nuevamente.");
@@ -351,11 +285,11 @@
 
                 users.forEach(user => {
                     tableBody.append(`
-                        <tr>
-                            <td><input type="checkbox" value="${user.id}"></td>
-                            <td>${user.email}</td>
-                        </tr>
-                    `);
+                            <tr>
+                                <td><input type="checkbox" value="${user.id}"></td>
+                                <td>${user.email}</td>
+                            </tr>
+                        `);
                 });
 
                 $('#user-table').show();
@@ -373,6 +307,44 @@
                 $('#user-table').hide();
             }
         });
+
+        Dropzone.options.profilePictureDropzone = {
+            url: '/api/Template/UploadFile',
+            paramName: "file", // Nombre del parámetro en la solicitud
+            maxFilesize: 5, // Tamaño máximo en MB
+            acceptedFiles: "image/*", // Tipos de archivos permitidos
+            success: function (file, response) {
+                if (response.success) {
+                    uploadedImageUrl = response.filePath; // Guardar la URL de la imagen
+                } else {
+                    alert("Error al cargar la imagen: " + response.message);
+                }
+            },
+            error: function (file, errorMessage) {
+                console.error("Error al cargar la imagen:", errorMessage);
+                alert("Hubo un problema al cargar la imagen.");
+            }
+        };
+    </script>
+    <script type="text/javascript" src="~/js/Template/Index.js"></script>
+    <script>
+        const inputs = document.querySelectorAll(".input");
+        function addcl() {
+            let parent = this.parentNode.parentNode;
+            parent.classList.add("focus");
+        }
+        function remcl() {
+            let parent = this.parentNode.parentNode;
+            if (this.value == "") {
+                parent.classList.remove("focus");
+            }
+        }
+        inputs.forEach(input => {
+            input.addEventListener("focus", addcl);
+            input.addEventListener("blur", remcl);
+        });
     </script>
 </body>
 </html>
+
+

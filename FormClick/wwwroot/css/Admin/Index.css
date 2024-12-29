@@ -1,0 +1,107 @@
+﻿body {
+/*    font-family: Arial, sans-serif;*/
+/*    background-color: #f9f9f9;*/
+/*    margin: 20px;*/
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-warning {
+    background-color: #f1c40f;
+    color: white;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn[disabled] {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table thead {
+    background-color: #2cc48c;
+    color: white;
+}
+
+.table th, .table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th:first-child, .table td:first-child {
+    text-align: center;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.table-striped tbody tr:hover {
+    background-color: #eaeaea;
+}
+
+.status-banned {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.status-ok {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.admin-true {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.admin-false {
+    color: #bdc3c7;
+    font-weight: bold;
+}
+
+.verified-true {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.verified-false {
+    color: #e74c3c;
+    font-weight: bold;
+}

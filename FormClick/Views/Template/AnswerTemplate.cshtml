@@ -1,64 +1,100 @@
 ﻿@model FormClick.ViewModels.ResponseVM
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Respuestas del formulario";
 }
 
-<div class="container mt-4">
-    <h2 class="text-center">@Model.Title</h2>
-    <p class="text-center">@Model.Description</p>
-    <p class="text-center"><strong>Tema:</strong> @Model.Topic</p>
-    <p class="text-center"><strong>Tema:</strong> @Model.Score</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/css/Template/showOwnAnsweredTemplates.css">
+    <title>@ViewData["Title"]</title>
+    <style>
+        .main-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 80%;
+            margin: 40px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h2 class="text-center display-4 tittle-response">@Model.Title</h2>
+        <p class="text-center lead">@Model.Description</p>
+        <p class="text-center"><strong>@Localizer["Theme"]:</strong> <span class="tittle-response">@Model.Topic</span></p>
+        <p class="text-center"><strong>@Localizer["Score"]:</strong> <span class="badge bg-success">@Model.Score</span></p>
 
-    <div class="mt-4">
-        @foreach (var question in Model.Questions) {
-            var borderClass = question.IsCorrect ? "border-success border-3" : "border-danger border-3";
-            var iconClass = question.IsCorrect ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger";
+        <div class="mt-4">
+            @foreach (var question in Model.Questions)
+            {
+                var borderClass = question.IsCorrect ? "border-success" : "border-danger";
+                var iconClass = question.IsCorrect ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger";
 
-            <div class="card mb-3 @borderClass position-relative">
-                <div class="card-body">
-                    <div class="position-absolute top-0 end-0 p-2">
-                        <i class="bi @iconClass" style="font-size: 1.5rem;"></i>
-                    </div>
-                    <h4 class="card-title">@question.Text</h4>
+                <div class="card mb-3 @borderClass border-3 position-relative shadow-sm">
+                    <div class="card-body">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <i class="bi @iconClass" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="card-title text-secondary">@question.Text</h4>
 
-                    @if (question.Type == "true-false") {
-                        <p><strong>Opciones:</strong></p>
-                        <ul class="list-unstyled">
-                            <li style="@(question.SelectedAnswer == "Cierto" ? "font-weight: bold;" : "")">
-                                <span class="badge bg-primary">Verdadero</span>
-                                @if (question.SelectedAnswer == "Cierto") {
-                                    <span class="badge bg-dark ms-2">•</span>
-                                }
-                            </li>
-                            <li style="@(question.SelectedAnswer == "Falso" ? "font-weight: bold;" : "")">
-                                <span class="badge bg-danger">Falso</span>
-                                @if (question.SelectedAnswer == "Falso") {
-                                    <span class="badge bg-dark ms-2">•</span>
-                                }
-                            </li>
-                        </ul>
-                    } else if (question.Type == "multiple-choice") {
-                        <p><strong>Opciones:</strong></p>
-                        <ul class="list-unstyled">
-                            @foreach (var option in question.Options) {
-                                <li style="@(option.OptionId == question.SelectedOptionId ? "font-weight: bold;" : "")">
-                                    <span class="badge bg-info">@option.Text</span>
-                                    @if (option.OptionId == question.SelectedOptionId){
-                                        <span class="badge bg-dark ms-2">•</span>
+                        @if (question.Type == "true-false")
+                        {
+                            <p><strong>@Localizer["Options"]:</strong></p>
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <span class="badge bg-primary me-2">@Localizer["True"]</span>
+                                    @if (question.SelectedAnswer == "Cierto")
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success ms-auto"></i>
                                     }
                                 </li>
-                            }
-                        </ul>
-                    } else if (question.Type == "open") {
-                        <p><strong>Tu respuesta:</strong> @question.SelectedAnswer</p>
-                    }
+                                <li class="list-group-item d-flex align-items-center">
+                                    <span class="badge bg-danger me-2">@Localizer["False"]</span>
+                                    @if (question.SelectedAnswer == "Falso") {
+                                        <i class="bi bi-check-circle-fill text-success ms-auto"></i>
+                                    }
+                                </li>
+                            </ul>
+                        }
+                        else if (question.Type == "multiple-choice")
+                        {
+                            <p><strong>@Localizer["Options"] :</strong></p>
+                            <ul class="list-group">
+                                @foreach (var option in question.Options)
+                                {
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <span class="badge bg-info me-2 mult-option">@option.Text</span>
+                                        @if (option.OptionId == question.SelectedOptionId)
+                                        {
+                                            <i class="bi bi-check-circle-fill text-success ms-auto"></i>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else if (question.Type == "open")
+                        {
+                            <p><strong>@Localizer["Your answer"] :</strong> <span class="text-muted">@question.SelectedAnswer</span></p>
+                        }
+                    </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
 
-    <div class="text-center mt-4">
-        <a href="http://localhost:5180/api/Template/showAnsweredTemplates" class="btn btn-secondary">Regresar</a>
+        <div class="text-center mt-4">
+            <a href="http://localhost:5180/api/Template/showAnsweredTemplates" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> @Localizer["Go back"]
+            </a>
+        </div>
     </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

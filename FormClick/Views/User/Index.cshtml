@@ -1,27 +1,28 @@
 ﻿@model FormClick.Models.User
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "User Profile";
 }
 
-<h2 class="text-center my-4">User Profile</h2>
+<h2 class="text-center my-4">@Localizer["User settings"]</h2>
 
 <form method="post" asp-controller="User" asp-action="Update" id="userForm" class="container" enctype="multipart/form-data">
     <div class="form-group text-center">
         <img src="@Model.ProfilePicture" alt="Profile Picture" class="img-fluid rounded-circle profile-img" />
         <br />
-        <button type="button" class="btn btn-secondary" id="addProfilePictureButton">Añadir Foto de Perfil</button>
+        <button type="button" class="btn btn-secondary" id="addProfilePictureButton">@Localizer["Add profile picture"]</button>
         <div class="dropzone mx-auto" id="profilePictureDropzone" style="display: none;"></div>
         <br />
     </div>
     <div class="form-group">
-        <label for="Name">Name</label>
+        <label for="Name">@Localizer["Name"]</label>
         <input type="text" class="form-control form-control-lg" id="Name" name="Name" value="@Model.Name" required />
-        <label for="Username">Username</label>
+        <label for="Username">@Localizer["Username"]</label>
         <input type="text" class="form-control form-control-lg" id="Username" name="Username" value="@Model.Username" readonly />
     </div>
     <div class="form-group">
-        <label for="Cellphone">Cellphone</label>
+        <label for="Cellphone">@Localizer["Cellphone"]</label>
         <input type="text" class="form-control form-control-lg" id="Cellphone" name="Cellphone" value="@Model.Cellphone" />
     </div>
     <div class="form-group">
@@ -29,22 +30,25 @@
         <input type="email" class="form-control form-control-lg" id="Email" name="Email" value="@Model.Email" readonly />
     </div>
     <div class="form-group">
-        <label for="Language">Language</label>
+        <label for="Language">@Localizer["Language"]</label>
         <select class="form-control form-control-lg" name="Language" asp-for="Language">
             <option value="es">Español (Mexico)</option>
             <option value="en">English (United States)</option>
             <option value="de">Deutsch (Germany)</option>
         </select>
     </div>
-    <div class="form-group form-check">
-        <label for="DarkMode" class="form-check-label">
-            <input type="checkbox" id="DarkMode" name="DarkMode" class="form-check-input" />
-            Dark Mode
-        </label>
-    </div>
+    <!--
+        <div class="form-group form-check">
+            <label for="DarkMode" class="form-check-label">
+                <input type="checkbox" id="DarkMode" name="DarkMode" class="form-check-input" />
+                Dark Mode
+            </label>
+        </div>
+    -->
+    
 
     <div class="text-center">
-        <button type="submit" class="btn btn-primary btn-lg mt-4">Save Changes</button>
+        <button type="submit" class="btn btn-primary btn-lg mt-4">@Localizer["Save changes"]</button>
     </div>
 </form>
 
@@ -55,20 +59,18 @@
     });
 
     Dropzone.options.profilePictureDropzone = {
-        url: '@Url.Action("UploadProfilePicture", "User")',
+        url: '@Url.Action("UploadFile", "User")',
         paramName: "file",
         maxFilesize: 5,
         acceptedFiles: "image/*",
-        dictDefaultMessage: "Arrastra y suelta una imagen o haz clic para cargar",
+        dictDefaultMessage: "Drag and drop",
         success: function (file, response) {
         console.log(response);
         if (response.success) {
-            alert("Imagen cargada con éxito");
+            alert("Succesfully charged");
             const img = document.querySelector('.profile-img');
             img.src = response.filePath;
-            img.onload = function() {
-                // Aquí puedes hacer algo después de que la imagen se haya cargado
-            };
+            img.onload = function() { };
         } else {
             alert("Error: " + response.message);
         }

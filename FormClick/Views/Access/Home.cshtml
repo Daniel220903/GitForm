@@ -29,7 +29,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Diseño con Bootstrap y jQuery</title>
+    <title>Home</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,14 +54,14 @@
     <div class="container-fluid">
         <div class="row">
             <aside class="col-md-3">
-                <span class="mb-3 popular-template">Templates Populares: </span>
+                <span class="mb-3 popular-template">@Localizer["Popular quizzes"]: </span>
                 <div class="list-group">
                     @foreach (var template in Model.TopLikedTemplates) {
                         <div class="list-group-item">
                             <img src="@template.ProfilePicture" alt="Creador @template.UserName">
                             <div>
                                 <span class="title">@template.Title</span><br>
-                                <small class="creator-small">Creador:</small> @template.UserName<br>
+                                <small class="creator-small">@Localizer["Creator"]:</small> @template.UserName<br>
                                 <small class="mb-1 creator-small">Likes:</small> @template.TotalLikes
                             </div>
                         </div>
@@ -71,7 +71,7 @@
             <main class="col-md-9">
                 <div class="mb-4 d-flex align-items-center">
                     <form asp-controller="Access" asp-action="Search" method="post" class="d-flex search-template-form" style="width: 100%;">
-                        <input type="text" class="form-control me-2" id="searchInput" name="searchTerm" placeholder="Buscar publicaciones...">
+                        <input type="text" class="form-control me-2" id="searchInput" name="searchTerm" placeholder="@Localizer["Search posts"]..">
                         <button class="btn btn-primary" id="searchButton" type="submit" style="margin-right:10px;">
                             <i class="fas fa-search"></i>
                         </button>
@@ -147,6 +147,11 @@
     </footer>
 
     <script>
+        const reply = "@Localizer["Reply"]";
+        const newComment = "@Localizer["New comment"]";
+        const seeComment = "@Localizer["See comments"]";
+        const noCommentsYet = "@Localizer["There are no comments yet"]";
+
         document.addEventListener('DOMContentLoaded', function () {
             var search = false;
             const templates = @Html.Raw(Json.Serialize(Model.Templates));
@@ -170,7 +175,7 @@
                             <div class="col card-container">
                                 <div class="card">
                                     <div class="card-body d-flex">
-                                        <img src="https://picsum.photos/200/200" class="card-img-left me-3" alt="Publicación 1">
+                                        <img src="${template.picture}" class="card-img-left me-3" alt="Publicación 1">
                                         <div class="flex-grow-2" style="width: 70%;">
                                             <span class="card-title">${template.title}</span>
                                             <p class="card-text description-scroll">${template.description}</p>
@@ -185,7 +190,9 @@
                                             </span>
                                             <br />
                                             <span class="ms-2" style="margin-top:-20px;">
-                                                <a href="#" style="margin-bottom: 2%; margin-top: -20px;" class="btn btn-primary mt-2 answer-template">Contestar</a>
+                                                <a href="#" style="margin-bottom: 2%; margin-top: -20px;" class="btn btn-primary mt-2 answer-template">
+                                                    ${reply}
+                                                </a>
                                             </span>
                                             <br />
                                         </div>
@@ -216,13 +223,13 @@
 
                                             <div class="col-2 d-flex justify-content-center align-items-center card-footer-new-comment">
                                                 <button class="btn d-flex align-items-center btn btn-outline-primary btn-sm mt-3 toggle-comment" data-template-id="${template.templateId}">
-                                                    Nuevo comentario
+                                                    ${newComment}
                                                 </button>
                                             </div>
 
                                             <div class="col-2 d-flex justify-content-center align-items-center card-footer-items card-footer-new-comment">
                                                 <button class="btn btn-outline-secondary btn-sm mt-3 show-comments" data-template-id="${template.templateId}">
-                                                    Ver comentarios
+                                                    ${seeComment}
                                                 </button>
                                             </div>
                                         </div>
@@ -258,7 +265,7 @@
                         const isLoggedIn = false;
                         if (!isLoggedIn) {
                             Toastify({
-                                text: "Ocupas estar logeado para comentar",
+                                text: "You need to be logged in to comment",
                                 duration: 3500,
                                 close: true,
                                 gravity: "top",
@@ -279,7 +286,7 @@
                         const isLoggedIn = false;
                         if (!isLoggedIn) {
                             Toastify({
-                                text: "Ocupas estar logeado para dar like",
+                                text: "You need to be logged in to like",
                                 duration: 3500,
                                 close: true,
                                 gravity: "top",
@@ -307,7 +314,7 @@
                         const isLoggedIn = false;
                         if (!isLoggedIn) {
                             Toastify({
-                                text: "Ocupas estar logeado para responder",
+                                text: "You need to be logged in to reply",
                                 duration: 3500,
                                 close: true,
                                 gravity: "top",
@@ -344,7 +351,7 @@
                                 .then(response => response.json())
                                 .then(comments => {
                                     if (comments.length === 0) {
-                                        commentsContainer.innerHTML = '<p class="no-comment">No comments yet</p>';
+                                        commentsContainer.innerHTML = `<p class="no-comment">${noCommentsYet}</p>`;
                                     } else {
                                         commentsContainer.innerHTML = comments
                                             .map(c => `
@@ -353,13 +360,13 @@
                                                             <img src="${c.profilePicture}" alt="Profile Picture" class="comment-profile-picture">
                                                             <strong class="comment-username">${c.userName}</strong>
                                                             <span class="comment-date">${new Date(c.createdAt).toLocaleString('es-MX', {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                                hour12: true,
-                                                day: '2-digit',
-                                                month: 'short',
-                                                year: 'numeric'
-                                            })}</span>
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                            hour12: true,
+                                                            day: '2-digit',
+                                                            month: 'short',
+                                                            year: 'numeric'
+                                                        })}</span>
                                                         </p>
                                                         <p class="comment-text">${c.commentText}</p>
                                                     </div>

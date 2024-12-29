@@ -35,6 +35,7 @@ namespace FormClick.Controllers{
                     Description = t.Description,
                     CreatedAt = t.CreatedAt,
                     ProfilePicture = t.User.ProfilePicture,
+                    picture = t.picture,
                     Topic = t.Topic,
                     UserId = t.User.Id,
                     UserName = t.User.Username,
@@ -300,51 +301,99 @@ namespace FormClick.Controllers{
             }
         }
 
+        [HttpPost]
+        public IActionResult LoggedSearch([FromBody] SearchRequest request) {
+            var userClaims = User.Identity as ClaimsIdentity;
+            var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            var userId = int.Parse(userIdClaim);
 
-        public IActionResult LoggedSearch([FromBody] SearchRequest request)
-        {
-            try{
-                var userClaims = User.Identity as ClaimsIdentity;
-                var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
-                var userId = int.Parse(userIdClaim);
+            var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
 
-                var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
+            var templates = _appDbContext.Templates
+                .Where(t => t.DeletedAt == null &&
+                    (t.Title.Contains(request.SearchTerm) ||
+                        t.Description.Contains(request.SearchTerm) ||
+                        t.Topic.Contains(request.SearchTerm) ||
+                        t.User.Username.Contains(request.SearchTerm) ||
+                        t.User.Email.Contains(request.SearchTerm)) &&
+                    (isAdmin
+                        || t.Public
+                        || t.TemplateAccesses.Any(ta => ta.UserId == userId)
+                        || t.UserId == userId) 
+                        && !_appDbContext.Responses.Any(r => r.TemplateId == t.Id && r.UserId == userId)
+                ).OrderByDescending(t => t.CreatedAt).Take(30)
+                .Select(t => new TemplateViewModel {
+                    TemplateId = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreatedAt = t.CreatedAt,
+                    ProfilePicture = t.User.ProfilePicture,
+                    Topic = t.Topic,
+                    UserId = t.User.Id,
+                    UserName = t.User.Username,
+                    TotalLikes = t.Likes.Count()
+                }).ToList();
 
-                var templates = _appDbContext.Templates
+            return Json(templates);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoggedSearchWithResponses([FromBody] SearchRequest request){
+            var userClaims = User.Identity as ClaimsIdentity;
+            var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            var userId = int.Parse(userIdClaim);
+
+            var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
+
+            try {
+                var templates = await _appDbContext.Templates
+                    .Where(t => t.UserId == userId)
                     .Where(t => t.DeletedAt == null &&
                         (t.Title.Contains(request.SearchTerm) ||
-                         t.Description.Contains(request.SearchTerm) ||
-                         t.Topic.Contains(request.SearchTerm) ||
-                         t.User.Username.Contains(request.SearchTerm) ||
-                         t.User.Email.Contains(request.SearchTerm)) &&
+                            t.Description.Contains(request.SearchTerm) ||
+                            t.Topic.Contains(request.SearchTerm) ||
+                            t.User.Username.Contains(request.SearchTerm) ||
+                            t.User.Email.Contains(request.SearchTerm)) &&
                         (isAdmin
-                         || t.Public
-                         || t.TemplateAccesses.Any(ta => ta.UserId == userId)
-                         || t.UserId == userId) &&
-                        !_appDbContext.Responses.Any(r => r.TemplateId == t.Id && r.UserId == userId)
+                            || t.Public
+                            || t.TemplateAccesses.Any(ta => ta.UserId == userId)
+                            || t.UserId == userId)
                     )
                     .OrderByDescending(t => t.CreatedAt)
-                    .Take(30)
-                    .Select(t => new TemplateViewModel
-                    {
-                        TemplateId = t.Id,
-                        Title = t.Title,
-                        Description = t.Description,
-                        CreatedAt = t.CreatedAt,
-                        ProfilePicture = t.User.ProfilePicture,
-                        Topic = t.Topic,
-                        UserId = t.User.Id,
-                        UserName = t.User.Username,
-                        TotalLikes = t.Likes.Count()
-                    }).ToList();
+                    .Include(t => t.Responses)
+                    .ThenInclude(r => r.User)
+                    .Include(t => t.User)
+                    .ToListAsync();
 
-                Console.WriteLine(templates);
-                return Json(templates);
+                var answerTemplateVMs = templates.Select(t => new AnswerTemplateVM{
+                    TemplateId = t.Id,
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreatedAt = t.CreatedAt,
+                    UserId = userId,
+                    UserName = t.User?.Username ?? "Unknown",
+                    ProfilePicture = t.User?.ProfilePicture ?? "default_picture.jpg",
+                    picture = t.picture,
+                    Topic = t.Topic,
+                    TotalLikes = t.Likes?.Count() ?? 0,
+                    Responses = t.Responses?.Select(r => new ResponsedBYVM {
+                        ResponseId = r.Id,
+                        UserId = r.User?.Id ?? 0,
+                        UserName = r.User?.Username ?? "Unknown",
+                        ProfilePicture = r.User?.ProfilePicture ?? "default_profile_picture.jpg",
+                        Score = r.Score,
+                        CreatedAt = r.CreatedAt
+                    }).ToList() ?? new List<ResponsedBYVM>()
+                }).ToList();
+
+                Console.WriteLine($"Found {answerTemplateVMs.Count} answer templates.");
+
+                return Json(answerTemplateVMs);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: " + ex.Message);
-                return StatusCode(500, "Internal Server Error");
+                Console.WriteLine($"Error: {ex.Message}");
+                return Json(new { error = "An error occurred", details = ex.Message });
             }
         }
 

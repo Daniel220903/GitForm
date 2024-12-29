@@ -10,6 +10,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using FormClick.Data;
+using dotenv.net;
 
 namespace FormClick{
     public class Program{
@@ -23,6 +24,9 @@ namespace FormClick{
             builder.Services.AddScoped<FileUploadService>();
 
             builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+            builder.Services.AddEndpointsApiExplorer();
+            //builder.Services.AddSwaggerGen();
+            builder.Services.AddSingleton<S3Service>();
 
             builder.Services.AddLocalization(options =>{
                 options.ResourcesPath = "Resources";
@@ -69,6 +73,7 @@ namespace FormClick{
                 name: "default",
                 pattern: "{controller=Access}/{action=Home}/{id?}");
 
+            DotEnv.Load();
             app.Run();
         }
     }

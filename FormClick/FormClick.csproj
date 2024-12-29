@@ -7,25 +7,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Resources\NewFolder\**" />
     <Compile Remove="wwwroot\Home\**" />
     <Compile Remove="wwwroot\js\NewFolder1\**" />
     <Compile Remove="wwwroot\js\NewFolder\**" />
+    <Content Remove="Resources\NewFolder\**" />
     <Content Remove="wwwroot\Home\**" />
     <Content Remove="wwwroot\js\NewFolder1\**" />
     <Content Remove="wwwroot\js\NewFolder\**" />
+    <EmbeddedResource Remove="Resources\NewFolder\**" />
     <EmbeddedResource Remove="wwwroot\Home\**" />
     <EmbeddedResource Remove="wwwroot\js\NewFolder1\**" />
     <EmbeddedResource Remove="wwwroot\js\NewFolder\**" />
+    <None Remove="Resources\NewFolder\**" />
     <None Remove="wwwroot\Home\**" />
     <None Remove="wwwroot\js\NewFolder1\**" />
     <None Remove="wwwroot\js\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\css\Template\showOwnTemplates.cs" />
     <Content Remove="wwwroot\img\login.jpg" />
+    <Content Remove="wwwroot\uploads\748efe6a-6664-415f-87eb-9ffaf074b49c.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.410.12" />
+    <PackageReference Include="dotenv.net" Version="3.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -36,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Logs\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

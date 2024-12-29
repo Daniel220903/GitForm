@@ -24,7 +24,6 @@ namespace FormClick.Controllers{
             _appDbContext = appDbContext;
             _logger = logger;
         }
-
         public IActionResult Index() {
             var userClaims = User.Identity as ClaimsIdentity;
             var userIdClaim = userClaims?.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
@@ -45,6 +44,7 @@ namespace FormClick.Controllers{
                     Description = t.Description,
                     CreatedAt = t.CreatedAt,
                     ProfilePicture = t.User.ProfilePicture,
+                    picture = t.picture,
                     Topic = t.Topic,
                     UserId = t.User.Id,
                     UserName = t.User.Username,
