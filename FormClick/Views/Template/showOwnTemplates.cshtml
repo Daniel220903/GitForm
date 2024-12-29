@@ -1,60 +1,410 @@
 ﻿@model List<FormClick.ViewModels.AnswerTemplateVM>
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Mis Templates";
 }
 
-<h1>Mis Templates</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-@if (Model != null && Model.Any())
-{
-    <div class="row">
-        @foreach (var template in Model)
-        {
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">@template.Title</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            <strong>Descripción:</strong> @template.Description
-                        </p>
-                        <p class="card-text">
-                            <strong>Creado el:</strong> @template.CreatedAt.ToString("dd/MM/yyyy")
-                        </p>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!--
+    <link rel="stylesheet" type="text/css" href="~/css/Access/Home.css">
+    
+    <link rel="stylesheet" type="text/css" href="~/css/Access/footerHome.css">
+     -->
 
-                        @if (template.Responses != null && template.Responses.Any())
-                        {
-                            <h6>Respuestas:</h6>
-                            <ul class="list-group">
-                                @foreach (var response in template.Responses)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>Usuario:</strong> @response.UserName <br />
-                                            <strong>Puntuación:</strong> @response.Score <br />
-                                            <strong>Fecha:</strong> @response.CreatedAt.ToString("dd/MM/yyyy")
-                                        </div>
-                                        <a class="btn btn-primary btn-sm" href="/api/Template/showOwnAnsweredTemplates/@response.ResponseId">Ver Respuesta</a>
+    <link rel="stylesheet" type="text/css" href="~/css/Template/showOwnTemplates.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/dropzone.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p class="text-muted">No hay respuestas aún.</p>
-                        }
-                    </div>
-                </div>
-            </div>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- <script src="~/js/Access/Home.js" asp-append-version="true"></script>  -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+    <style>
+        .new-comments-container {
+            border-top: 1px solid black !important;
+            background-color: #2cc48c;
+            padding: 10px;
         }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-9 text-center mt-4">
+                <h2 class="">
+                    <i class="fas fa-align-justify	"></i>@Localizer["Your quizzes"]
+                </h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <main class="col-md-9">
+                
+                <div class="mb-4 d-flex align-items-center">
+                    <form asp-controller="Access" asp-action="LoggedSearch" method="post" class="d-flex search-template-form" style="width: 100%;">
+                        <input type="text" class="form-control me-2" id="searchInput" name="searchTerm" placeholder="@Localizer["Search posts"]...">
+                        <button class="btn btn-primary" id="searchButton" type="submit" style="margin-right:10px;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button class="btn btn-primary" id="deleteButton">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
+
+
+                </div>
+
+                <div class="row row-cols-1 row-cols-md-1 g-4" id="cardsContainer">
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-info" role="alert">
+                            No se encontraron templates para mostrar.
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="templatesContainer">
+                        </div>
+
+                        <div id="paginationContainer" class="text-center mt-4">
+                            <button id="loadMoreButton" class="btn btn-primary">Ver más</button>
+                        </div>
+                    }
+                </div>
+                <div class="footer-space"></div>
+            </main>
+        </div>
     </div>
-}
-else
-{
-    <div class="alert alert-info" role="alert">
-        No has creado ningún template aún.
-    </div>
-}
+</body>
+</html>
+<script>
+    const seeComments = "@Localizer["See comments"]";
+    const Edit = "@Localizer["Edit"]";
+    const viewAnswers = "@Localizer["View answers"]";
+    const viewAnswer = "@Localizer["View answer"]";
+    const Score = "@Localizer["Score"]";
+    document.addEventListener('DOMContentLoaded', function () {
+        var search = false;
+        const templates = @Html.Raw(Json.Serialize(Model));
+        let currentPage = 1;
+        const templatesPerPage = 10;
+
+        function displayTemplates(page, templateFunction) {
+            if (!templateFunction) return;
+
+            const totalPages = Math.ceil(templateFunction.length / templatesPerPage);
+            const start = (page - 1) * templatesPerPage;
+            const end = start + templatesPerPage;
+            const templatesToDisplay = templateFunction.slice(start, end);
+            const templatesContainer = document.getElementById('templatesContainer');
+
+            templatesContainer.innerHTML = '';
+
+            templatesToDisplay.forEach(template => {
+                const templateCard = `
+                                        <div class="col card-container">
+                                            <div class="card">
+                                                <div class="card-body d-flex">
+                                                    <img src="${template.picture}" class="card-img-left me-3" alt="Publicación 1">
+                                                    <div class="flex-grow-2" style="width: 70%;">
+                                                        <span class="card-title">${template.title}</span>
+                                                        <p class="card-text description-scroll">${template.description}</p>
+                                                        <p>
+                                                            ${new Date(template.createdAt).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit', hour12: true })} ·
+                                                            ${new Date(template.createdAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                        </p>
+                                                    </div>
+                                                    <div class="flex-grow-2 d-flex flex-column align-items-center justify-content-center" style="width: 25%; margin-top: -6%;">
+                                                        <span class="ms-2">
+                                                            <a href="#" style="margin-bottom: 2%; background-color: #6a3800; border:none;" class="btn btn-primary mt-2">${template.topic}</a>
+                                                        </span>
+                                                        <br />
+                                                        <span class="ms-2" style="margin-top:-20px;">
+                                                            <a href="../Template/EditTemplate/${template.templateId}" style="margin-bottom: 2%; margin-top: -20px;" class="btn btn-primary mt-2 answer-template">
+                                                                ${Edit}
+                                                            </a>
+                                                        </span>
+                                                        <br />
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-footer">
+                                                    <div class="row text-center">
+                                                        <div class="col-2 d-flex justify-content-center align-items-center">
+                                                            <div class="owner-icon">
+                                                                <img src="${template.profilePicture}" style="border-radius:50%;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-2 d-flex justify-content-center align-items-center" style="margin-left: -20px; margin-right: 15px;">
+                                                            <div class="owner-icon">
+                                                                ${template.userName}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-2 d-flex justify-content-center align-items-center card-footer-items">
+                                                            <button class="btn d-flex align-items-center like-button ${template.hasLiked ? 'btn-primary' : 'btn-outline-primary'}"
+                                                                    data-template-id="${template.templateId}"
+                                                                    data-has-liked="${template.hasLiked}"
+                                                                    disabled>
+                                                                <i class="bi bi-hand-thumbs-up me-1"></i>
+                                                            </button>
+                                                            <span class="ms-2 like-counter" id="like-counter-${template.templateId}">
+                                                                ${template.totalLikes}
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="col-2 d-flex justify-content-center align-items-center card-footer-items card-footer-new-comment">
+                                                            <button class="btn btn-outline-secondary btn-sm mt-3 show-answers" data-template-id="${template.templateId}">
+                                                                ${viewAnswers}
+                                                            </button>
+                                                        </div>
+
+
+                                                        <div class="col-2 d-flex justify-content-center align-items-center card-footer-items card-footer-new-comment">
+                                                            <button class="btn btn-outline-secondary btn-sm mt-3 show-comments" data-template-id="${template.templateId}">
+                                                                ${seeComments}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="answers-container-${template.templateId}" class="answers-container" style="display: none;">  </div>
+
+
+                                                <div id="comments-container-${template.templateId}" class="comments-container" style="display: none;"></div>
+
+                                                <div class="new-comments-container" id="comment-section-${template.templateId}" style="display: none;">
+                                                    <textarea class="form-control mb-2" id="comment-textarea-${template.templateId}" placeholder="Escribe un comentario..."></textarea>
+                                                    <button class="btn btn-primary btn-sm save-comment" data-template-id="${template.templateId}">Guardar comentario</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>`;
+                templatesContainer.innerHTML += templateCard;
+            });
+
+            const paginationContainer = document.getElementById('paginationContainer');
+            paginationContainer.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.classList.add('btn', 'btn-outline-primary', 'page-button');
+                pageButton.textContent = i;
+                pageButton.setAttribute('data-page', i);
+                pageButton.addEventListener('click', function () {
+                    currentPage = i;
+                    displayTemplates(currentPage, templateFunction);
+                    updatePagination();
+                });
+                paginationContainer.appendChild(pageButton);
+            }
+
+            updatePagination();
+
+            document.querySelectorAll('.toggle-comment').forEach(button => {
+                button.addEventListener('click', () => {
+                    const templateId = button.dataset.templateId;
+                    const commentSection = document.getElementById(`comment-section-${templateId}`);
+
+                    if (commentSection) {
+                        commentSection.style.display = commentSection.style.display === 'none' ? 'block' : 'none';
+                    } else {
+                        console.error(`No se encontró el elemento con ID: comment-section-${templateId}`);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.save-comment').forEach(button => {
+                button.addEventListener('click', () => {
+                    const templateId = button.dataset.templateId;
+                    const commentText = document.getElementById(`comment-textarea-${templateId}`).value;
+                    const payload = {
+                        templateId: templateId,
+                        commentText: commentText,
+                    };
+                    fetch('/Comment/Add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                document.getElementById(`comment-textarea-${templateId}`).value = '';
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+
+            document.querySelectorAll('.show-comments').forEach(button => {
+                button.addEventListener('click', () => {
+                    const templateId = button.dataset.templateId;
+                    const commentsContainer = document.getElementById(`comments-container-${templateId}`);
+
+                    if (commentsContainer.style.display === 'none') {
+                        button.classList.add('btn-white');
+                        button.classList.remove('btn-outline-secondary');
+                        button.classList.add('btn-secondary');
+
+                        fetch(`/Comment/GetComments?templateId=${templateId}`)
+                            .then(response => response.json())
+                            .then(comments => {
+                                if (comments.length === 0) {
+                                    commentsContainer.innerHTML = '<p class="no-comment">No comments yet</p>';
+                                } else {
+                                    commentsContainer.innerHTML = comments
+                                        .map(c => `
+                                            <div class="comment">
+                                                <p class="comment-header">
+                                                    <img src="${c.profilePicture}" alt="Profile Picture" class="comment-profile-picture">
+                                                    <strong class="comment-username">${c.userName}</strong>
+                                                    <span class="comment-date">${new Date(c.createdAt).toLocaleString('es-MX', {
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                        hour12: true,
+                                                        day: '2-digit',
+                                                        month: 'short',
+                                                        year: 'numeric'
+                                                    })}</span>
+                                                </p>
+                                                <p class="comment-text">${c.commentText}</p>
+                                            </div>
+                                        `).join('');
+                                }
+                                commentsContainer.style.display = 'block';
+                            })
+                            .catch(error => console.error('Error:', error));
+                    } else {
+                        button.classList.remove('btn-white');
+                        button.classList.add('btn-outline-secondary');
+                        button.classList.remove('btn-secondary');
+                        commentsContainer.style.display = 'none';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.show-comments').forEach(button => {
+                const templateId = button.dataset.templateId;
+                const commentsContainer = document.getElementById(`comments-container-${templateId}`);
+                commentsContainer.style.display = commentsContainer.innerHTML.trim() ? 'block' : 'none';
+            });
+
+            document.querySelectorAll('.show-answers').forEach(button => {
+                button.addEventListener('click', () => {
+                    const templateId = parseInt(button.dataset.templateId); // Convierte a número
+                    const answersContainer = document.getElementById(`answers-container-${templateId}`);
+
+                    const template = templates.find(t => t.templateId === templateId);
+
+                    if (!template) {
+                        console.error(`Template with ID ${templateId} not found`);
+                        return;
+                    }
+
+                    if (answersContainer.style.display === 'none') {
+                        console.log("template indicidual", template);
+                        button.classList.add('btn-white');
+                        button.classList.remove('btn-outline-secondary');
+                        button.classList.add('btn-secondary');
+
+                        if (!template.responses || template.responses.length === 0) {
+                            answersContainer.innerHTML = '<p class="no-answer">No answers yet</p>';
+                        } else {
+                            answersContainer.innerHTML = template.responses
+                                .map(a => `
+                                <div class="answer">
+                                    <p class="answer-header">
+                                        <img src="${a.profilePicture}" alt="Profile Picture" class="answer-profile-picture">
+                                        <strong class="answer-username">${a.userName}</strong>
+                                        <span class="answer-date">${new Date(a.createdAt).toLocaleString('es-MX', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: true,
+                                        day: '2-digit',
+                                        month: 'short',
+                                        year: 'numeric'
+                                    })}</span>
+                                    </p>
+                                    <strong class="answer-username">${Score}: ${a.score}</strong>
+                                    <br/>
+                                    <a class="btn btn-primary btn-sm" href="/api/Template/showOwnAnsweredTemplates/${a.responseId}">${viewAnswer}</a>
+                                </div>
+                            `).join('');
+                        }
+                        answersContainer.style.display = 'block';
+                    } else {
+                        button.classList.remove('btn-white');
+                        button.classList.add('btn-outline-secondary');
+                        button.classList.remove('btn-secondary');
+                        answersContainer.style.display = 'none';
+                    }
+                });
+            });
+
+            // Oculta los contenedores vacíos al cargar
+            document.querySelectorAll('.show-answers').forEach(button => {
+                const templateId = parseInt(button.dataset.templateId);
+                const answersContainer = document.getElementById(`answers-container-${templateId}`);
+
+                const template = templates.find(t => t.templateId === templateId);
+                answersContainer.style.display = template?.answers?.length ? 'block' : 'none';
+            });
+
+        }
+
+        function updatePagination() {
+            const pageButtons = document.querySelectorAll('.page-button');
+            pageButtons.forEach(button => {
+                const page = button.getAttribute('data-page');
+                button.classList.toggle('active', parseInt(page) === currentPage);
+            });
+        }
+
+        if (search == false) {
+            displayTemplates(currentPage, templates);
+        }
+
+        document.getElementById('deleteButton').addEventListener('click', function (event) {
+            document.getElementById('searchInput').value = '';
+            displayTemplates(currentPage, templates);
+        });
+
+        $(".search-template-form").submit(function (event) {
+            currentPage = 1;
+            event.preventDefault();
+            var searchTerm = $("#searchInput").val();
+
+            $.ajax({
+                url: '/Access/LoggedSearchWithResponses',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ searchTerm: searchTerm }),
+                success: function (response) {
+                    const searchTemplate = response;
+                    displayTemplates(currentPage, searchTemplate);
+                },
+                error: function (xhr, status, error) { }
+            });
+        });
+    });
+</script>
+
+

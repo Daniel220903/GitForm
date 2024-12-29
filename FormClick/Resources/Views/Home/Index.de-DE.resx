@@ -120,4 +120,34 @@
   <data name="Welcome" xml:space="preserve">
     <value>BEINVENUTTEN</value>
   </data>
+  <data name="Popular quizzes" xml:space="preserve">
+    <value>Beliebte Quiz</value>
+  </data>
+  <data name="Search posts" xml:space="preserve">
+    <value>Beiträge suchen</value>
+  </data>
+  <data name="Reply" xml:space="preserve">
+    <value>Antworten</value>
+  </data>
+  <data name="See comments" xml:space="preserve">
+    <value>Kommentare ansehen</value>
+  </data>
+  <data name="Creator" xml:space="preserve">
+    <value>Ersteller</value>
+  </data>
+  <data name="There are no comments yet" xml:space="preserve">
+    <value>Es gibt noch keine Kommentare</value>
+  </data>
+  <data name="Write a comment..." xml:space="preserve">
+    <value>Schreibe einen Kommentar...</value>
+  </data>
+  <data name="Save comment" xml:space="preserve">
+    <value>Kommentar speichern</value>
+  </data>
+  <data name="There are no comments yet1" xml:space="preserve">
+    <value>Es gibt noch keine Kommentare</value>
+  </data>
+  <data name="." xml:space="preserve">
+    <value>.</value>
+  </data>
 </root>

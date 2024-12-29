@@ -1,0 +1,95 @@
+﻿@model FormClick.Models.Template;
+
+@{
+    ViewData["Title"] = "Editar Template";
+    var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+    var userIdClaim = claimsIdentity?.FindFirst("Id")?.Value;
+    int parsedClaim = int.TryParse(userIdClaim, out var idParsed) ? idParsed : 0;
+    // Console.Write(Model.Questions);
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Animated Login Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" type="text/css" href="~/css/Template/getRespond.css"> -->
+    <link rel="stylesheet" type="text/css" href="~/css/Template/getRespond.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="login-content">
+            <div style="width: 100%;">
+                <h1 class="tittle">@Model.Title</h1>
+                <div class="input-div one description-container">
+                    <div class="i">
+                        <i class="fas fa-user user-icon"></i>
+                    </div>
+                    <div class="div">
+                        <h5 class="subtitle-text">Descripcion</h5>
+                        <p class="description-p">@Model.Description</p>
+                    </div>
+                </div>
+
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <h5 class="subtitle-text">Tema:</h5>
+                        <p><strong> @Model.Topic</strong></p>
+                    </div>
+                </div>
+
+                <form id="questions-form" class="question-form-container">
+                    <div id="questions-container">
+                        @foreach (var question in Model.Questions)
+                        {
+                            <div class="question-item">
+                                <p><strong>@question.Text</strong></p>
+
+                                @if (question.QuestionType == "open")
+                                {
+                                    <input type="hidden" name="questionType_@question.Id" value="open" />
+                                    <textarea name="question_@question.Id" rows="3" class="form-control open-text-area"></textarea>
+                                }
+                                else if (question.QuestionType == "true-false")
+                                {
+
+                                    <div>
+                                        <input type="hidden" name="questionType_@question.Id" value="trueFalse" />
+                                        <label>
+                                            <input type="radio" name="question_@question.Id" value="Cierto"> Verdadero
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="question_@question.Id" value="Falso"> Falso
+                                        </label>
+                                    </div>
+                                }
+                                else if (question.QuestionType == "multiple-choice" && question.Options != null)
+                                {
+                                    foreach (var option in question.Options)
+                                    {
+                                        <div>
+                                            <input type="hidden" name="questionType_@question.Id" value="MultipleChoice" />
+                                            <label>
+                                                <input type="checkbox" name="question_@question.Id" value="@option.Id">
+                                                @option.OptionText
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                    <button type="submit" class="btn btn-primary response-button">Enviar Respuestas</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

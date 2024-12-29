@@ -1,5 +1,6 @@
 ﻿@model FormClick.ViewModels.TemplateVM;
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Contestar Template";
     var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
@@ -7,102 +8,136 @@
     int parsedClaim = int.TryParse(userIdClaim, out var idParsed) ? idParsed : 0;
 }
 
-<h1>@Model.Title</h1>
-<p>@Model.Description</p>
-<p><strong>Tema:</strong> @Model.Topic</p>
-
-<form id="questions-form">
-    <div id="questions-container">
-        @foreach (var question in Model.Questions)
-        {
-            <div class="question-item">
-                <p><strong>@question.Text</strong></p>
-
-                @if (question.Type == "open"){
-                    <input type="hidden" name="questionType_@question.QuestionId" value="open" />
-                    <textarea name="question_@question.QuestionId" rows="3" class="form-control"></textarea>
-                }else if (question.Type == "true-false"){
-
-                    <div>
-                        <input type="hidden" name="questionType_@question.QuestionId" value="trueFalse" />
-                        <label>
-                            <input type="radio" name="question_@question.QuestionId" value="Cierto"> Verdadero
-                        </label>
-                        <label>
-                            <input type="radio" name="question_@question.QuestionId" value="Falso"> Falso
-                        </label>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Animated Login Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="~/css/Template/getRespond.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="login-content">
+            <div style="width: 100%;">
+                <h1 class="tittle">@Model.Title</h1>
+                <div class="input-div one description-container">
+                    <div class="i">
+                        <i class="fas fa-user user-icon"></i>
                     </div>
-                }else if (question.Type == "multiple-choice" && question.Options != null){
-                    foreach (var option in question.Options)
-                    {
-                        <div>
-                            <input type="hidden" name="questionType_@question.QuestionId" value="MultipleChoice" />
-                            <label>
-                                <input type="checkbox" name="question_@question.QuestionId" value="@option.OptionId">
-                                @option.Text
-                            </label>
-                        </div>
-                    }
-                }
+                    <div class="div">
+                        <h5 class="subtitle-text">@Localizer["Description"]</h5>
+                        <p class="description-p">@Model.Description</p>
+                    </div>
+                </div>
+
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <h5 class="subtitle-text">@Localizer["Theme"]:</h5>
+                        <p><strong> @Model.Topic</strong></p>
+                    </div>
+                </div>
+
+                <form id="questions-form" class="question-form-container">
+                    <div id="questions-container">
+                        @foreach (var question in Model.Questions)
+                        {
+                            <div class="question-item">
+                                <p><strong>@question.Text</strong></p>
+
+                                @if (question.Type == "open")
+                                {
+                                    <input type="hidden" name="questionType_@question.QuestionId" value="open" />
+                                    <textarea name="question_@question.QuestionId" rows="3" class="form-control open-text-area"></textarea>
+                                }
+                                else if (question.Type == "true-false")
+                                {
+
+                                    <div>
+                                        <input type="hidden" name="questionType_@question.QuestionId" value="trueFalse" />
+                                        <label>
+                                            <input type="radio" name="question_@question.QuestionId" value="Cierto"> @Localizer["True"]
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="question_@question.QuestionId" value="Falso"> @Localizer["False"]
+                                        </label>
+                                    </div>
+                                }
+                                else if (question.Type == "multiple-choice" && question.Options != null)
+                                {
+                                    foreach (var option in question.Options)
+                                    {
+                                        <div>
+                                            <input type="hidden" name="questionType_@question.QuestionId" value="MultipleChoice" />
+                                            <label>
+                                                <input type="checkbox" name="question_@question.QuestionId" value="@option.OptionId">
+                                                @option.Text
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                    <button type="submit" class="btn btn-primary response-button">@Localizer["Submit Answers"]</button>
+                </form>
+
             </div>
-        }
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Enviar Respuestas</button>
-</form>
+    @section Scripts {
+        <script>
+            document.getElementById("questions-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+                let userId = @parsedClaim;
+                const formData = new FormData(this);
+                const answers = {};
 
-@section Scripts {
-    <script>
-        document.getElementById("questions-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-            let userId = @parsedClaim;
-            const formData = new FormData(this);
-            const answers = {};
+                formData.forEach((value, key) => {
+                    const questionIdMatch = key.match(/^question_(\d+)$/);
+                    const questionTypeMatch = key.match(/^questionType_(\d+)$/);
 
-            formData.forEach((value, key) => {
-                // Extraer el ID de la pregunta
-                const questionIdMatch = key.match(/^question_(\d+)$/);
-                const questionTypeMatch = key.match(/^questionType_(\d+)$/);
+                    if (questionIdMatch) {
+                        const questionId = questionIdMatch[1];
 
-                if (questionIdMatch) {
-                    const questionId = questionIdMatch[1];
+                        if (!answers[questionId]) {
+                            answers[questionId] = {
+                                type: formData.get(`questionType_${questionId}`),
+                                answer: value,
+                                userId: userId
+                            };
+                        } else {
+                            answers[questionId].answer = [].concat(answers[questionId].answer, value);
+                        }
 
-                    // Si el campo es de tipo "open", capturamos el valor del textarea
-                   if (!answers[questionId]) {
-                        answers[questionId] = {
-                            type: formData.get(`questionType_${questionId}`),  // Obtener el tipo de la pregunta
-                            answer: value,
-                            userId: userId
-                        };
-                    } else {
-                        answers[questionId].answer = [].concat(answers[questionId].answer, value);
                     }
+                });
 
-                }
+                fetch('../StoreAnswer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(answers)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en el envío');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert("Respuestas enviadas correctamente");
+                        window.location.href = "/Home/Index";
+                    })
+                    .catch(error => {
+                        alert("Error al enviar las respuestas");
+                    });
             });
-
-            console.log("JSON para el backend:", JSON.stringify(answers, null, 2));
-
-            // Aquí bloquearíamos el envío al backend. 
-            fetch('../StoreAnswer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(answers)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en el envío');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Respuesta del backend:", data);
-                alert("Respuestas enviadas correctamente");
-                window.location.href = "/Home/Index";
-            })
-            .catch(error => {
-                console.error("Error al enviar las respuestas:", error);
-                alert("Error al enviar las respuestas");
-            });
-        });
-    </script>
+        </script>
 }
+</body>
+</html>

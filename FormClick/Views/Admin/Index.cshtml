@@ -1,29 +1,43 @@
 ﻿@model IEnumerable<FormClick.Models.User>
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @if (TempData["Mensaje"] != null){
     <p style="color: red">@TempData["Mensaje"]</p>
 }
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Admin Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="~/css/Admin/Index.css">
+    <!--
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+     -->
+</head>
+<body>
 
 <h1>Lista de Usuarios</h1>
 <form id="user-actions-form" method="post" asp-controller="Usuario" asp-action="AccionUsuario">
     <input type="hidden" name="selectedUserIds" id="selected-user-ids">
     <input type="hidden" name="actionType" id="action-type">
-
+        
     <div style="margin-bottom: 15px;">
         <button type="button" id="btn-delete" class="btn btn-danger" disabled>
-            <i class="fas fa-trash-alt"></i> Delete
+            <i class="fas fa-trash-alt"></i> @Localizer["Delete"]
         </button>
         <button type="button" id="btn-ban" class="btn btn-warning" disabled>
-            <i class="fas fa-lock"></i> Ban
+            <i class="fas fa-lock"></i> @Localizer["Ban"]
         </button>
         <button type="button" id="btn-unban" class="btn btn-success" disabled>
             <i class="fas fa-unlock"></i> Unban
         </button>
         <button type="button" id="btn-add-admin" class="btn btn-primary" disabled>
-            <i class="fas fa-user-plus"></i> Add Admin
+                <i class="fas fa-user-plus"></i> @Localizer["Add admin"]
         </button>
         <button type="button" id="btn-delete-admin" class="btn btn-danger" disabled>
-            <i class="fas fa-trash-alt"></i> Delete Admin
+            <i class="fas fa-trash-alt"></i> @Localizer["Remove admin"]
         </button>
     </div>
 
@@ -31,14 +45,14 @@
         <thead>
             <tr>
                 <th><input type="checkbox" id="select-all"></th>
-                <th>Name</th>
+                <th>@Localizer["Name"]</th>
                 <th>Email</th>
-                <th>Cellphone</th>
-                <th>Registration Date</th>
-                <th>Last Active</th>
+                <th>@Localizer["Cellphone"]</th>
+                <th>@Localizer["Registration date"]</th>
+                <th>@Localizer["Last active"]</th>
                 <th>Status</th>
-                <th>Administrador</th>
-                <th>Verified</th>
+                <th>Admin</th>
+                <th>@Localizer["Verified"]</th>
             </tr>
         </thead>
         <tbody>
@@ -48,27 +62,29 @@
                     <td>@user.Name</td>
                     <td>@user.Email</td>
                     <td>@user.Cellphone</td>
-                    <td>@user.CreatedAt</td>
-                    <td>@user.LastLogin?.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@user.CreatedAt.ToString("h:mm tt · dd MMM yyyy", new System.Globalization.CultureInfo("es-ES"))</td>
+                    <td>@user.LastLogin?.ToString("h:mm tt · dd MMM yyyy", new System.Globalization.CultureInfo("es-ES"))</td>
                     <td>
                         @if (user.Banned == true) {
-                            <h2>Baneado</h2>
+                            <i class="fas fa-ban" style="color: red;" title="Baneado"></i>
                         } else {
-                            <h2>FAIN</h2>
+                            <i class="fas fa-check-circle" style="color: green;" title="Activo"></i>
                         }
                     </td>
+
                     <td>
-                        @if (user.Admin == true){
-                            <h2>Administrador</h2>
-                        } else{
-                            <h2>No administrador</h2>
+                        @if (user.Admin == true) {
+                            <i class="fas fa-user-shield" style="color: blue;" title="Administrador"></i>
+                        } else {
+                            <i class="fas fa-user" style="color: gray;" title="No Administrador"></i>
                         }
                     </td>
+
                     <td>
-                        @if (user.Verified == true){
-                            <h2>Verificado</h2>
+                        @if (user.Verified == true) {
+                            <i class="fas fa-check-circle" style="color: green;" title="Verificado"></i>
                         } else {
-                            <h2>No verificado</h2>
+                            <i class="fas fa-times-circle" style="color: red;" title="No Verificado"></i>
                         }
                     </td>
                 </tr>
@@ -78,70 +94,6 @@
 </form>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const selectAllCheckbox = document.getElementById('select-all');
-        const userCheckboxes = document.querySelectorAll('.user-checkbox');
-        const btnBorrar = document.getElementById('btn-delete');
-        const btnBloquear = document.getElementById('btn-ban');
-        const btnDesbloquear = document.getElementById('btn-unban');
-        const btnAddAdmin = document.getElementById('btn-add-admin');
-        const btnDeleteAdmin = document.getElementById('btn-delete-admin');
-        const form = document.getElementById('user-actions-form');
-        const selectedUserIdsInput = document.getElementById('selected-user-ids');
-        const actionTypeInput = document.getElementById('action-type');
-
-        function updateButtons() {
-            const anyChecked = Array.from(userCheckboxes).some(cb => cb.checked);
-            btnBorrar.disabled = !anyChecked;
-            btnBloquear.disabled = !anyChecked
-            btnDesbloquear.disabled = !anyChecked;
-            btnAddAdmin.disabled = !anyChecked;
-            btnDeleteAdmin.disabled = !anyChecked;
-        }
-
-        selectAllCheckbox.addEventListener('change', function () {
-            userCheckboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-            updateButtons();
-        });
-
-        userCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', updateButtons);
-        });
-
-        function submitForm(actionType) {
-            const selectedUsers = Array.from(userCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.getAttribute('data-user-id'));
-
-            const payload = {
-                actionType: actionType,
-                selectedUsers: selectedUsers
-            };
-
-            fetch('/Admin/AdminAction', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            }).then(response => {
-                if (response.ok) {
-                    window.location.href = '/Admin/Index';
-                } else {
-                    console.error('Error en la solicitud:', response.statusText);
-                }
-            })
-            .catch(error => console.error('Error de red:', error));
-        }
-
-        btnBorrar.addEventListener('click', () => submitForm('borrar'));
-        btnBloquear.addEventListener('click', () => submitForm('bloquear'));
-        btnDesbloquear.addEventListener('click', () => submitForm('desbloquear'));
-        btnAddAdmin.addEventListener('click', () => submitForm('addAdmin'));
-        btnDeleteAdmin.addEventListener('click', () => submitForm('deleteAdmin'));
-    });
-</script>
-
+<script type="text/javascript" src="~/js/Admin/Index.js"></script>
+</body>
+</html>
