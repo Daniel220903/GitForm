@@ -130,8 +130,7 @@ namespace FormClick.Controllers{
 
         //SE MUESTRAN LAS RESPUESTAS DEL TEMPLATE SELECCIONADO
         [HttpGet("GetRespond/{templateId}")]
-        public async Task<IActionResult> GetRespond(int templateId)
-        {
+        public async Task<IActionResult> GetRespond(int templateId) {
             var template = await _appDbContext.Templates
                 .Include(t => t.Questions)
                 .ThenInclude(q => q.Options)
@@ -279,18 +278,45 @@ namespace FormClick.Controllers{
         }
 
         [HttpGet("EditTemplate/{templateId}")]
-        public async Task<IActionResult> EditTemplate(int templateId){
+        public async Task<IActionResult> EditTemplate(int templateId)
+        {
+            // Consulta el template incluyendo las relaciones necesarias
             var template = await _appDbContext.Templates
                 .Where(t => t.Id == templateId)
                 .Include(u => u.User)
                 .Include(t => t.Questions)
                 .ThenInclude(q => q.Options)
-                .FirstOrDefaultAsync(t => t.Id == templateId);
+                .FirstOrDefaultAsync();
 
-            //Console.Write(template);
+            if (template == null)
+            {
+                return NotFound(); // Maneja el caso donde el template no exista
+            }
 
-            return View(template);
+            // Mapea los datos al ViewModel
+            var editTemplateVM = new EditTemplateVM
+            {
+                Title = template.Title,
+                Description = template.Description,
+                Topic = template.Topic,
+                Questions = template.Questions.Select(q => new QuestionViewModelEdit
+                {
+                    Id = q.Id,
+                    Text = q.Text,
+                    QuestionType = q.QuestionType,
+                    openAnswer = q.openAnswer,
+                    Options = q.Options?.Select(o => new OptionViewModelEdit {
+                        Id = o.Id,
+                        OptionText = o.OptionText,
+                        IsCorrect = o.IsCorrect,
+                    }).ToList() ?? new List<OptionViewModelEdit>()
+                }).ToList()
+            };
+
+            // Devuelve la vista con el ViewModel
+            return View(editTemplateVM);
         }
+
 
         [HttpPost("Update")]
         public async Task<IActionResult> Update([FromBody] Dictionary<string, QuestionAnswer> answers){
