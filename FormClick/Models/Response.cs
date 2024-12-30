@@ -6,6 +6,7 @@
         public int TemplateId { get; set; }
         public int UserId { get; set; }
         public float Score { get; set; }
+        public int templateVersion { get; set; } = 0;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

@@ -4,6 +4,7 @@ using FormClick.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FormClick.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241230051719_creando el template historial")]
+    partial class creandoeltemplatehistorial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +58,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("TargetUserId");
 
-                    b.ToTable("AdminActions", (string)null);
+                    b.ToTable("AdminActions");
                 });
 
             modelBuilder.Entity("FormClick.Models.Answer", b =>
@@ -98,7 +101,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("ResponseId");
 
-                    b.ToTable("Answers", (string)null);
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("FormClick.Models.Comment", b =>
@@ -134,7 +137,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("FormClick.Models.Like", b =>
@@ -166,7 +169,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Likes", (string)null);
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("FormClick.Models.Question", b =>
@@ -210,7 +213,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("TemplateId");
 
-                    b.ToTable("Questions", (string)null);
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("FormClick.Models.QuestionOption", b =>
@@ -244,7 +247,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("QuestionOptions", (string)null);
+                    b.ToTable("QuestionOptions");
                 });
 
             modelBuilder.Entity("FormClick.Models.Response", b =>
@@ -282,7 +285,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Responses", (string)null);
+                    b.ToTable("Responses");
                 });
 
             modelBuilder.Entity("FormClick.Models.Tag", b =>
@@ -313,7 +316,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("TemplateId");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("FormClick.Models.Template", b =>
@@ -362,7 +365,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Templates", (string)null);
+                    b.ToTable("Templates");
                 });
 
             modelBuilder.Entity("FormClick.Models.TemplateAccess", b =>
@@ -392,7 +395,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("TemplateId");
 
-                    b.ToTable("TemplateAccess", (string)null);
+                    b.ToTable("TemplateAccess");
                 });
 
             modelBuilder.Entity("FormClick.Models.User", b =>
@@ -470,7 +473,7 @@ namespace FormClick.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("TemplateHistorial", b =>
@@ -524,7 +527,7 @@ namespace FormClick.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TemplateHistorials", (string)null);
+                    b.ToTable("TemplateHistorials");
                 });
 
             modelBuilder.Entity("FormClick.Models.AdminAction", b =>
