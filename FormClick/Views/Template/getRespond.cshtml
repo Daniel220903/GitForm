@@ -93,7 +93,7 @@
     @section Scripts {
         <script>
             document.getElementById("questions-form").addEventListener("submit", function (event) {
-                event.preventDefault();
+                // event.preventDefault();
                 let userId = @parsedClaim;
                 const formData = new FormData(this);
                 const answers = {};

@@ -1,11 +1,10 @@
-﻿@model FormClick.Models.Template;
+﻿@model FormClick.ViewModels.EditTemplateVM;
 
 @{
     ViewData["Title"] = "Editar Template";
     var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
     var userIdClaim = claimsIdentity?.FindFirst("Id")?.Value;
     int parsedClaim = int.TryParse(userIdClaim, out var idParsed) ? idParsed : 0;
-    // Console.Write(Model.Questions);
 }
 
 <!DOCTYPE html>
@@ -45,37 +44,29 @@
 
                 <form id="questions-form" class="question-form-container">
                     <div id="questions-container">
-                        @foreach (var question in Model.Questions)
-                        {
+                        @foreach (var question in Model.Questions) {
                             <div class="question-item">
                                 <p><strong>@question.Text</strong></p>
 
-                                @if (question.QuestionType == "open")
-                                {
+                                @if (question.QuestionType == "open") {
                                     <input type="hidden" name="questionType_@question.Id" value="open" />
-                                    <textarea name="question_@question.Id" rows="3" class="form-control open-text-area"></textarea>
-                                }
-                                else if (question.QuestionType == "true-false")
-                                {
-
+                                    <textarea name="question_@question.Id" rows="3" class="form-control open-text-area">@question.openAnswer</textarea>
+                                }else if (question.QuestionType == "true-false") {
                                     <div>
                                         <input type="hidden" name="questionType_@question.Id" value="trueFalse" />
                                         <label>
-                                            <input type="radio" name="question_@question.Id" value="Cierto"> Verdadero
+                                            <input type="radio" name="question_@question.Id" value="Cierto" @(question.openAnswer == "Cierto" ? "checked" : "")> Verdadero
                                         </label>
                                         <label>
-                                            <input type="radio" name="question_@question.Id" value="Falso"> Falso
+                                            <input type="radio" name="question_@question.Id" value="Falso" @(question.openAnswer == "Falso" ? "checked" : "")> Falso
                                         </label>
                                     </div>
-                                }
-                                else if (question.QuestionType == "multiple-choice" && question.Options != null)
-                                {
-                                    foreach (var option in question.Options)
-                                    {
+                                } else if (question.QuestionType == "multiple-choice" && question.Options != null) {
+                                    @foreach (var option in question.Options) {
                                         <div>
                                             <input type="hidden" name="questionType_@question.Id" value="MultipleChoice" />
                                             <label>
-                                                <input type="checkbox" name="question_@question.Id" value="@option.Id">
+                                                <input type="radio" name="question_@question.Id" value="@option.Id" @(option.IsCorrect ? "checked" : "")>
                                                 @option.OptionText
                                             </label>
                                         </div>
@@ -86,10 +77,12 @@
                     </div>
                     <button type="submit" class="btn btn-primary response-button">Enviar Respuestas</button>
                 </form>
-
             </div>
         </div>
     </div>
-
+    <script>
+        const templates = @Html.Raw(Json.Serialize(Model));
+        console.log(templates);
+    </script>
 </body>
 </html>
