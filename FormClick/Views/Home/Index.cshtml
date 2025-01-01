@@ -83,14 +83,11 @@
                 </div>
 
                 <div class="row row-cols-1 row-cols-md-1 g-4" id="cardsContainer">
-                    @if (!Model.Templates.Any())
-                    {
+                    @if (!Model.Templates.Any()) {
                         <div class="alert alert-info" role="alert">
                             No se encontraron templates para mostrar.
                         </div>
-                    }
-                    else
-                    {
+                    } else {
                         <div id="templatesContainer">
                         </div>
 
@@ -155,6 +152,7 @@
                                                         </a>
                                                     </span>
                                                     <br />
+                                                    ${template.version >= 1 ? `<span class="badge bg-info text-dark">Versión: ${template.version}</span>` : ''}
                                                 </div>
                                             </div>
 

@@ -12,6 +12,7 @@ namespace FormClick.Models
         public string picture { get; set; }
         public bool Public { get; set; }
         public int Version { get; set; }
+        public bool IsCurrent { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

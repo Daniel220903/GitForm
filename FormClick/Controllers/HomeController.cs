@@ -32,17 +32,19 @@ namespace FormClick.Controllers{
             var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
 
             var templates = _appDbContext.Templates.Where(t => t.DeletedAt == null
+                            && t.IsCurrent == true 
                             && (isAdmin
                                 || t.Public
                                 || t.TemplateAccesses.Any(ta => ta.UserId == userId)
                                 || t.UserId == userId)
-                            && !_appDbContext.Responses.Any(r => r.TemplateId == t.Id && r.UserId == userId))
+                            && !_appDbContext.Responses.Any(r => r.TemplateId == t.Id && r.UserId == userId))      
                .OrderByDescending(t => t.CreatedAt)
                .Select(t => new TemplateViewModel {
                     TemplateId = t.Id,
                     Title = t.Title,
                     Description = t.Description,
                     CreatedAt = t.CreatedAt,
+                    Version = t.Version,
                     ProfilePicture = t.User.ProfilePicture,
                     picture = t.picture,
                     Topic = t.Topic,
@@ -54,7 +56,7 @@ namespace FormClick.Controllers{
                 }).ToList();
 
             var topLikedTemplates = _appDbContext.Templates
-               .Where(t => t.DeletedAt == null)
+               .Where(t => t.DeletedAt == null && t.IsCurrent == true)
                .OrderByDescending(t => t.Likes.Count())
                .Take(5)
                .Select(t => new TemplateViewModel

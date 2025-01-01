@@ -309,13 +309,13 @@
         });
 
         Dropzone.options.profilePictureDropzone = {
-            url: '/api/Template/UploadFile',
-            paramName: "file", // Nombre del parámetro en la solicitud
-            maxFilesize: 5, // Tamaño máximo en MB
-            acceptedFiles: "image/*", // Tipos de archivos permitidos
+            url: '/api/Template/loadFile',
+            paramName: "file", 
+            maxFilesize: 5, 
+            acceptedFiles: "image/*", 
             success: function (file, response) {
                 if (response.success) {
-                    uploadedImageUrl = response.filePath; // Guardar la URL de la imagen
+                    uploadedImageUrl = response.filePath; 
                 } else {
                     alert("Error al cargar la imagen: " + response.message);
                 }
