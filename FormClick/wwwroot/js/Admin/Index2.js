@@ -1,50 +1,19 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
 
-    const deleteButtons = document.querySelectorAll('.delete-template-button');
 
-    // Asignar un evento de clic a cada uno
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Obtener el ID del template desde el atributo 'data-template-id'
-            const templateId = this.getAttribute('data-template-id');
-            showConfirmationModal(templateId);
-        });
-    });
 
-    function showConfirmationModal(templateId) {
-        const confirmButton = document.getElementById('confirmDeleteButton');
+    //$.ajax({
+    //    url: '/Admin/DeleteTemplate/' + templateId,
+    //    type: 'POST',
+    //    contentType: 'application/json',
+    //    data: JSON.stringify({ searchTerm: searchTerm }),
+    //    success: function (response) {
+    //        console.log("rispouns", response);
+    //        location.reload();
 
-        // Verifica si el botón de confirmación existe
-        if (confirmButton) {
-            confirmButton.onclick = function () {
-                sendDeleteRequest(templateId);
-            };
-
-            const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-            modal.show();
-        } else {
-            console.error('No se encontró el botón de confirmación');
-        }
-    }
-
-    function sendDeleteRequest(templateId) {
-        currentPage = 1;
-        event.preventDefault();
-        var searchTerm = "";
-
-        $.ajax({
-            url: '/api/Template/DeleteTemplate/' + templateId,
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ searchTerm: searchTerm }),
-            success: function (response) {
-                console.log("rispouns", response);
-                location.reload();
-
-            },
-            error: function (xhr, status, error) { }
-        });
-    }
+    //    },
+    //    error: function (xhr, status, error) { }
+    //});
 
     const selectAllCheckbox = document.getElementById('select-all');
     const userCheckboxes = document.querySelectorAll('.user-checkbox');

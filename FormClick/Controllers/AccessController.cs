@@ -350,7 +350,9 @@ namespace FormClick.Controllers{
             try {
                 var templates = await _appDbContext.Templates
                     .Where(t => t.UserId == userId)
-                    .Where(t => t.DeletedAt == null && t.IsCurrent == true &&
+                    .Where(t => t.DeletedAt == null 
+                    //&& t.IsCurrent == true 
+                    &&
                         (t.Title.Contains(request.SearchTerm) ||
                             t.Description.Contains(request.SearchTerm) ||
                             t.Topic.Contains(request.SearchTerm) ||
@@ -377,6 +379,8 @@ namespace FormClick.Controllers{
                     ProfilePicture = t.User?.ProfilePicture ?? "default_picture.jpg",
                     picture = t.picture,
                     Topic = t.Topic,
+                    IsCurrent = t.IsCurrent,
+                    Version = t.Version,
                     TotalLikes = t.Likes?.Count() ?? 0,
                     Responses = t.Responses?.Select(r => new ResponsedBYVM {
                         ResponseId = r.Id,

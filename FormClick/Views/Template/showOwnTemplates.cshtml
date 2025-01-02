@@ -16,11 +16,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <!--
-    <link rel="stylesheet" type="text/css" href="~/css/Access/Home.css">
-    
-    <link rel="stylesheet" type="text/css" href="~/css/Access/footerHome.css">
-     -->
+    <!--<link rel="stylesheet" type="text/css" href="~/css/Access/Home.css">
+    <link rel="stylesheet" type="text/css" href="~/css/Access/footerHome.css"> -->
 
     <link rel="stylesheet" type="text/css" href="~/css/Template/showOwnTemplates.css">
     
@@ -48,10 +45,11 @@
         <div class="row justify-content-center">
             <div class="col-md-9 text-center mt-4">
                 <h2 class="">
-                    <i class="fas fa-align-justify	"></i>@Localizer["Your quizzes"]
+                    <i class="fas fa-align-justify" style="margin-right: 10px;"></i>@Localizer["Your quizzes"]
                 </h2>
             </div>
         </div>
+        <br/>
         <div class="row justify-content-center">
             <main class="col-md-9">
                 
@@ -70,16 +68,12 @@
                 </div>
 
                 <div class="row row-cols-1 row-cols-md-1 g-4" id="cardsContainer">
-                    @if (!Model.Any())
-                    {
+                    @if (!Model.Any()) {
                         <div class="alert alert-info" role="alert">
                             No se encontraron templates para mostrar.
                         </div>
-                    }
-                    else
-                    {
-                        <div id="templatesContainer">
-                        </div>
+                    } else {
+                        <div id="templatesContainer"></div>
 
                         <div id="paginationContainer" class="text-center mt-4">
                             <button id="loadMoreButton" class="btn btn-primary">Ver más</button>
@@ -88,6 +82,25 @@
                 </div>
                 <div class="footer-space"></div>
             </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este elemento?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+                </div>
+            </div>
         </div>
     </div>
 </body>
@@ -130,19 +143,31 @@
                                                             ${new Date(template.createdAt).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}
                                                         </p>
                                                     </div>
-                                                    <div class="flex-grow-2 d-flex flex-column align-items-center justify-content-center" style="width: 25%; margin-top: -6%;">
+                                                    <div class="flex-grow-2 d-flex flex-column align-items-center justify-content-center" style="width: 25%; margin-top: -1%;">
                                                         <span class="ms-2">
                                                             <a href="#" style="margin-bottom: 2%; background-color: #6a3800; border:none;" class="btn btn-primary mt-2">${template.topic}</a>
                                                         </span>
                                                         <br />
-                                                            <span class="ms-2" style="margin-top:-20px;">
-                                                                <a href="${template.isCurrent === true ? `../Template/EditTemplate/${template.templateId}` : '#'}"
-                                                                   style="margin-bottom: 2%; margin-top: -20px;"
-                                                                   class="btn btn-primary mt-2 answer-template"
-                                                                   ${template.isCurrent === true ? '' : 'disabled'}>
-                                                                    ${template.isCurrent === true ? 'Editar' : 'Editado'}
-                                                                </a>
-                                                            </span>
+                                                        <span class="ms-2" style="margin-top:-20px;">
+                                                            <a href="${template.isCurrent === true ? `../Template/EditTemplate/${template.templateId}` : '#'}"
+                                                                style="margin-bottom: 2%; margin-top: -20px;"
+                                                                class="btn btn-primary mt-2 answer-template"
+                                                                ${template.isCurrent === true ? '' : 'disabled'}>
+                                                                ${template.isCurrent === true ? 'Edit' : 'Editado'}
+                                                            </a>
+                                                        </span>
+                                                        <br />
+                                                        <span class="ms-2" style="margin-top: -20px;">
+                                                            ${template.isCurrent === true ? `
+                                                                <button type="button"
+                                                                    style="margin-bottom: 2%; margin-top: -20px;"
+                                                                    class="btn btn-danger mt-2 delete-template"
+                                                                    onclick="showConfirmationModal('${template.templateId}')">
+                                                                    Delete
+                                                                </button>
+                                                            ` : ''}
+                                                        </span>
+
                                                         <br />
                                                         ${template.version >= 1 ? `<span class="badge bg-info text-dark">Versión: ${template.version}</span>` : ''}
                                                     </div>
@@ -364,11 +389,9 @@
                 });
             });
 
-            // Oculta los contenedores vacíos al cargar
             document.querySelectorAll('.show-answers').forEach(button => {
                 const templateId = parseInt(button.dataset.templateId);
                 const answersContainer = document.getElementById(`answers-container-${templateId}`);
-
                 const template = templates.find(t => t.templateId === templateId);
                 answersContainer.style.display = template?.answers?.length ? 'block' : 'none';
             });
@@ -409,7 +432,42 @@
                 error: function (xhr, status, error) { }
             });
         });
-    });
-</script>
 
+       
+    });
+
+    // Función para mostrar el modal de confirmación
+    function showConfirmationModal(templateId) {
+        const confirmButton = document.getElementById('confirmDeleteButton');
+
+        // Asociar el evento de confirmación al botón del modal
+        confirmButton.onclick = function () {
+            sendDeleteRequest(templateId);
+        };
+
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        modal.show();
+    }
+
+    // Función para enviar la petición AJAX al backend
+    function sendDeleteRequest(templateId) {
+        currentPage = 1;
+        event.preventDefault();
+        var searchTerm = "";
+
+        $.ajax({
+            url: '/api/Template/DeleteTemplate/'+ templateId,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ searchTerm: searchTerm }),
+            success: function (response) {
+                console.log("rispouns", response);
+                location.reload();
+               
+            },
+            error: function (xhr, status, error) { }
+        });
+    }
+</script>
 

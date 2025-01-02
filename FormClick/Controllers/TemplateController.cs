@@ -15,6 +15,7 @@ using System.Text.Json;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.CompilerServices;
 
 namespace FormClick.Controllers
 {
@@ -40,8 +41,7 @@ namespace FormClick.Controllers
         }
 
         [HttpPost("CreateTemplate")]
-        public async Task<IActionResult> CreateTemplate([FromBody] TemplateRequest templateRequest)
-        {
+        public async Task<IActionResult> CreateTemplate([FromBody] TemplateRequest templateRequest) {
             if (templateRequest == null)
                 return BadRequest(new { message = "La solicitud es inválida." });
 
@@ -61,8 +61,7 @@ namespace FormClick.Controllers
             if (userId == 0)
                 return Unauthorized(new { message = "El Id del usuario no es válido." });
 
-            Template template = new Template
-            {
+            Template template = new Template {
                 UserId = userId,
                 Title = title,
                 Description = description,
@@ -78,18 +77,15 @@ namespace FormClick.Controllers
             await _appDbContext.Templates.AddAsync(template);
             await _appDbContext.SaveChangesAsync();
 
-            if (!isPublic)
-            {
+            if (!isPublic){
                 List<TemplateAccess> templateAccessList = new List<TemplateAccess>();
-                foreach (var acc in templateRequest.SelectedUsers)
-                {
+                foreach (var acc in templateRequest.SelectedUsers){
                     bool isValid = int.TryParse(acc, out var accessId);
 
                     if (!isValid || accessId == 0)
                         continue;
 
-                    TemplateAccess templateAccess = new TemplateAccess
-                    {
+                    TemplateAccess templateAccess = new TemplateAccess{
                         TemplateId = template.Id,
                         UserId = accessId,
                         CreatedAt = DateTime.UtcNow,
@@ -103,16 +99,14 @@ namespace FormClick.Controllers
                 await _appDbContext.SaveChangesAsync();
             }
 
-            foreach (var quest in quests)
-            {
+            foreach (var quest in quests){
                 if (string.IsNullOrEmpty(quest.Title) || string.IsNullOrEmpty(quest.Type))
                     return BadRequest(new { message = "Faltan datos en las preguntas." });
 
                 if (quest.Type == "multiple-choice" && (quest.Options == null || !quest.Options.Any()))
                     return BadRequest(new { message = $"La pregunta '{quest.Title}' no tiene opciones válidas." });
 
-                Question question = new Question
-                {
+                Question question = new Question{
                     TemplateId = template.Id,
                     QuestionType = quest.Type,
                     Text = quest.Title,
@@ -126,13 +120,10 @@ namespace FormClick.Controllers
                 await _appDbContext.Questions.AddAsync(question);
                 await _appDbContext.SaveChangesAsync();
 
-                if (quest.Type == "multiple-choice")
-                {
-                    foreach (var opt in quest.Options)
-                    {
+                if (quest.Type == "multiple-choice"){
+                    foreach (var opt in quest.Options){
                         bool isCorrect = opt == quest.CorrectAnswer;
-                        QuestionOption questOpt = new QuestionOption
-                        {
+                        QuestionOption questOpt = new QuestionOption{
                             QuestionId = question.Id,
                             OptionText = opt,
                             IsCorrect = isCorrect,
@@ -733,6 +724,31 @@ namespace FormClick.Controllers
                 return StatusCode(500, new { success = false, message = "Error al cargar el archivo", error = ex.Message });
             }
         }
+
+        [HttpPost("DeleteTemplate/{id}")]
+        public async Task<IActionResult> DeleteTemplate(int id) {
+            Console.Write(id);
+            var template = _appDbContext.Templates.FirstOrDefault(t => t.Id == id && t.DeletedAt == null);
+            if (template == null)
+                return NotFound("Template no encontrado o ya eliminado.");
+            
+            template.DeletedAt = DateTime.UtcNow;
+
+           //} if (template.OriginalId != 0) {
+            var previousTemplates = _appDbContext.Templates
+                .Where(t => t.OriginalId == template.OriginalId || t.Id == template.OriginalId || t.OriginalId == template.Id && t.DeletedAt == null)
+                .ToList();
+
+            foreach (var previousTemplate in previousTemplates){
+                previousTemplate.DeletedAt = DateTime.UtcNow;
+            }
+            //}
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Template Borrado exitosamente" });
+        }
+
 
         private bool GetIsCorrect(Question question, Answer userAnswer)
         {

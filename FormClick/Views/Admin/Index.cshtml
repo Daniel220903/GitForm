@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FormClick.Models.User>
+﻿@model FormClick.ViewModels.AdminVM
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @if (TempData["Mensaje"] != null){
@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<h1>Lista de Usuarios</h1>
+<h1>Users</h1>
 <form id="user-actions-form" method="post" asp-controller="Usuario" asp-action="AccionUsuario">
     <input type="hidden" name="selectedUserIds" id="selected-user-ids">
     <input type="hidden" name="actionType" id="action-type">
@@ -56,7 +56,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in Model){
+                @foreach (var user in Model.Users){
                 <tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="@user.Id"></td>
                     <td>@user.Name</td>
@@ -92,8 +92,214 @@
         </tbody>
     </table>
 </form>
+
+<h1>Quiz</h1>
+<form id="user-actions-form" method="post" asp-controller="Usuario" asp-action="AccionTemplate">
+    <input type="hidden" name="selectedUserIds" id="selected-user-ids">
+    <input type="hidden" name="actionType" id="action-type">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@Localizer["Title"]</th>
+                <th>@Localizer["Description"]</th>
+                <th>@Localizer["Topic"]</th>
+                <th>@Localizer["Profile picture"]</th>
+                <th>@Localizer["Version"]</th>
+                <th>Delete</th>
+                <th>Edit</th>
+                <th>Is Deleted</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var template in Model.Templates)
+            {
+                <tr>
+                    <td>@template.Title</td>
+                    <td>@template.Description</td>
+                    <td>@template.Topic</td>
+                    <td><img src="@template.picture" alt="Alternate Text" /> </td>
+                    <td>@template.Version</td>
+                    <td>
+                        <span class="ms-2" style="margin-top: -20px;">
+                            <a href="@((template.DeletedAt != null) ? "#" : $"/api/Template/EditTemplate/{template.TemplateId}")"
+                                style="margin-bottom: 2%; margin-top: -20px;"
+                                class="btn btn-primary mt-2 answer-template"
+                            @if (template.DeletedAt != null)
+                            {
+                                @:disabled="true"
+                                @:style="pointer-events: none; opacity: 0.6;"
+                            }>
+                                Edit
+                            </a>
+                        </span>
+                        <br />
+                    </td>
+                    <td>
+                        <span class="ms-2" style="margin-top: -20px;">
+                            <button type="button"
+                                    style="margin-bottom: 2%; margin-top: -20px;"
+                                    class="btn btn-danger mt-2 @(template.DeletedAt != null ? "" : "delete-template-button")"
+                                    data-template-id="@template.TemplateId">
+                                Delete
+                            </button>
+                        </span>
+                    </td>
+                    <td>
+                        @if (template.DeletedAt != null){
+                            <i class="fas fa-trash-alt" style="color: green;" title="Deleted"></i>
+                        }else{
+                            <i class="fas fa-check-circle" style="color: blue;" title="Active"></i>
+                        }
+                    </td>
+
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+<!-- Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar este elemento?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-<script type="text/javascript" src="~/js/Admin/Index.js"></script>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const deleteButtons = document.querySelectorAll('.delete-template-button');
+
+            // Asignar un evento de clic a cada uno
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Obtener el ID del template desde el atributo 'data-template-id'
+                    const templateId = this.getAttribute('data-template-id');
+                    showConfirmationModal(templateId);
+                });
+            });
+
+            function showConfirmationModal(templateId) {
+                const confirmButton = document.getElementById('confirmDeleteButton');
+
+                // Verifica si el botón de confirmación existe
+                if (confirmButton) {
+                    confirmButton.onclick = function () {
+                        sendDeleteRequest(templateId);
+                    };
+
+                    const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                    modal.show();
+                } else {
+                    console.error('No se encontró el botón de confirmación');
+                }
+            }
+
+            function sendDeleteRequest(templateId) {
+                currentPage = 1;
+                event.preventDefault();
+                var searchTerm = "";
+
+                fetch('/api/Template/DeleteTemplate/' + templateId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ searchTerm: searchTerm })
+                })
+                    .then(response => {
+                        // Verificamos si la respuesta fue exitosa (código 200-299)
+                        if (response.ok) {
+                            // Si la respuesta es exitosa, recargamos la página
+                            location.reload();
+                        } else {
+                            // Si la respuesta no es exitosa, mostramos un error
+                            console.error('Error al eliminar el template:', response.statusText);
+                        }
+                    })
+                    .catch(error => {
+                        // Si hubo un error en la red o en la solicitud, lo mostramos
+                        console.error('Error de red:', error);
+                    });
+            }
+
+
+            const selectAllCheckbox = document.getElementById('select-all');
+            const userCheckboxes = document.querySelectorAll('.user-checkbox');
+            const btnBorrar = document.getElementById('btn-delete');
+            const btnBloquear = document.getElementById('btn-ban');
+            const btnDesbloquear = document.getElementById('btn-unban');
+            const btnAddAdmin = document.getElementById('btn-add-admin');
+            const btnDeleteAdmin = document.getElementById('btn-delete-admin');
+            const form = document.getElementById('user-actions-form');
+            const selectedUserIdsInput = document.getElementById('selected-user-ids');
+            const actionTypeInput = document.getElementById('action-type');
+
+            function updateButtons() {
+                const anyChecked = Array.from(userCheckboxes).some(cb => cb.checked);
+                btnBorrar.disabled = !anyChecked;
+                btnBloquear.disabled = !anyChecked
+                btnDesbloquear.disabled = !anyChecked;
+                btnAddAdmin.disabled = !anyChecked;
+                btnDeleteAdmin.disabled = !anyChecked;
+            }
+
+            selectAllCheckbox.addEventListener('change', function () {
+                userCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateButtons();
+            });
+
+            userCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateButtons);
+            });
+
+            function submitForm(actionType) {
+                const selectedUsers = Array.from(userCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.getAttribute('data-user-id'));
+
+                const payload = {
+                    actionType: actionType,
+                    selectedUsers: selectedUsers
+                };
+
+                fetch('/Admin/AdminAction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '/Admin/Index';
+                    } else {
+                        console.error('Error en la solicitud:', response.statusText);
+                    }
+                })
+                    .catch(error => console.error('Error de red:', error));
+            }
+
+            btnBorrar.addEventListener('click', () => submitForm('borrar'));
+            btnBloquear.addEventListener('click', () => submitForm('bloquear'));
+            btnDesbloquear.addEventListener('click', () => submitForm('desbloquear'));
+            btnAddAdmin.addEventListener('click', () => submitForm('addAdmin'));
+            btnDeleteAdmin.addEventListener('click', () => submitForm('deleteAdmin'));
+        });
+</script>
 </body>
 </html>

@@ -61,7 +61,7 @@
                         <i class="fas fa-question-circle" style="margin-left: -50%;"></i>
                     </div>
                     <div class="div">
-                        <input type="text" name="title" id="template-title" class="input" value="@Model.Topic" style="margin-left: -5%;">
+                        <input type="text" name="title" id="template-topic" class="input" value="@Model.Topic" style="margin-left: -5%;">
                     </div>
                 </div>
 
@@ -161,7 +161,7 @@
             });
             var description = $('textarea[name="description"]').val();
             var inputTittle = $('#template-title').val();
-            var titleValue = $('#template-title').val();
+            var titleValue = $('#template-topic').val();
 
             var jsonToSend = {
                 templateId: @Model.Id, 
