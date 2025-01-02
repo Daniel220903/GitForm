@@ -191,10 +191,11 @@
                                             <br />
                                             <span class="ms-2" style="margin-top:-20px;">
                                                 <a href="#" style="margin-bottom: 2%; margin-top: -20px;" class="btn btn-primary mt-2 answer-template">
-                                                    ${reply}
+                                                    ${reply}aa
                                                 </a>
                                             </span>
                                             <br />
+                                            ${template.version >= 1 ? `<span class="badge bg-info text-dark">Versión: ${template.version}</span>` : ''}
                                         </div>
                                     </div>
 

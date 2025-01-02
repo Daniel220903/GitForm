@@ -1,4 +1,4 @@
-﻿@model FormClick.ViewModels.EditTemplateVM;
+﻿ @model FormClick.ViewModels.EditTemplateVM;
 
 @{
     ViewData["Title"] = "Editar Template";
@@ -10,50 +10,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Animated Login Form</title>
+    <title>Editar Template</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- <link rel="stylesheet" type="text/css" href="~/css/Template/getRespond.css"> -->
     <link rel="stylesheet" type="text/css" href="~/css/Template/getRespond.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
+        <div class="mt-4 d-flex justify-content-start">
+            <a href="http://localhost:5180/api/Template/showOwnTemplates" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> Go back
+            </a>
+        </div>
         <div class="login-content">
             <div style="width: 100%;">
-                <h1 class="tittle">@Model.Title</h1>
-                <div class="input-div one description-container">
-                    <div class="i">
-                        <i class="fas fa-user user-icon"></i>
-                    </div>
-                    <div class="div">
-                        <h5 class="subtitle-text">Descripcion</h5>
-                        <p class="description-p">@Model.Description</p>
-                    </div>
-                </div>
-
+                <h5 class="subtitle-text">Titulo</h5>
                 <div class="input-div one">
                     <div class="i">
-                        <i class="fas fa-user"></i>
+                        <i class="fas fa-question-circle" style="margin-left: -50%;"></i>
                     </div>
                     <div class="div">
-                        <h5 class="subtitle-text">Tema:</h5>
-                        <p><strong> @Model.Topic</strong></p>
+                        <input type="text" name="title" id="template-title" class="input" value="@Model.Title" style="margin-left: -5%;">
                     </div>
                 </div>
 
-                <form id="questions-form" class="question-form-container">
+                <h5 class="subtitle-text" style="margin-top: 70px;">Descripcion</h5>
+                <div class="input-div one" style="height: 150px;">
+                    <div class="i">
+                        <i class="fas fa-question-circle" style="margin-left: -50%;"></i>
+                    </div>
+                    <div class="div">
+                        <textarea name="description" rows="3" class="form-control open-text-area" style="margin-left: -4%;">@Model.Description</textarea>
+                    </div>
+                </div>
+
+                <div class="input-div one div-dropzone">
+                    <div class="i">
+                        <i class="fas fa-user" style="margin-left: -50%;"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Image</h5>
+                        <div class="dropzone mx-auto" id="profilePictureDropzone" style="display: block; margin-left: -4%!important; width: 100%;"></div>
+                    </div>
+                </div>
+
+                <h5 class="subtitle-text">Tema</h5>
+                <div class="input-div one" style="margin-bottom: 100px;">
+                    <div class="i">
+                        <i class="fas fa-question-circle" style="margin-left: -50%;"></i>
+                    </div>
+                    <div class="div">
+                        <input type="text" name="title" id="template-title" class="input" value="@Model.Topic" style="margin-left: -5%;">
+                    </div>
+                </div>
+
+                <form id="questions-form" class="question-form-container" method="post" asp-controller="Api/Template/@Model.Id" asp-action="UpdateTemplate">
                     <div id="questions-container">
                         @foreach (var question in Model.Questions) {
                             <div class="question-item">
-                                <p><strong>@question.Text</strong></p>
+                                <!--  <p><strong></strong></p> -->
+                                <div class="input-div one" style="margin-top: 70px;">
+                                    <div class="i">
+                                        <i class="fas fa-question-circle" style="margin-left: -50%;"></i>
+                                    </div>
+                                    <div class="div">
+                                        <input type="text" name="title" id="template-title-@Model.Id" class="input" value="@question.Text" style="margin-left: -5%;">
+                                    </div>
+                                </div>
 
                                 @if (question.QuestionType == "open") {
                                     <input type="hidden" name="questionType_@question.Id" value="open" />
+                                    <input type="hidden" name="question_@question.Id">
                                     <textarea name="question_@question.Id" rows="3" class="form-control open-text-area">@question.openAnswer</textarea>
-                                }else if (question.QuestionType == "true-false") {
+                                } else if (question.QuestionType == "true-false") {
                                     <div>
-                                        <input type="hidden" name="questionType_@question.Id" value="trueFalse" />
+                                        <input type="hidden" name="questionType_@question.Id" value="true-false" />
                                         <label>
                                             <input type="radio" name="question_@question.Id" value="Cierto" @(question.openAnswer == "Cierto" ? "checked" : "")> Verdadero
                                         </label>
@@ -62,11 +94,11 @@
                                         </label>
                                     </div>
                                 } else if (question.QuestionType == "multiple-choice" && question.Options != null) {
+                                    <input type="hidden" name="questionType_@question.Id" value="multiple-choice" />
                                     @foreach (var option in question.Options) {
                                         <div>
-                                            <input type="hidden" name="questionType_@question.Id" value="MultipleChoice" />
                                             <label>
-                                                <input type="radio" name="question_@question.Id" value="@option.Id" @(option.IsCorrect ? "checked" : "")>
+                                                <input type="radio" name="question_@question.Id" value="@option.OptionText" @(option.IsCorrect ? "checked" : "")>
                                                 @option.OptionText
                                             </label>
                                         </div>
@@ -80,9 +112,110 @@
             </div>
         </div>
     </div>
+
     <script>
-        const templates = @Html.Raw(Json.Serialize(Model));
-        console.log(templates);
+        let uploadedImageUrl = "";
+        $('#questions-form').on('submit', function (e) {
+            e.preventDefault();
+            var questionsData = {};
+
+            $('#questions-container .question-item').each(function () {
+                var questionInput = $(this).find('input[name^="question_"]');
+                var titleInput = $(this).find('input[name="title"]'); // Selecciona el input con name "title"
+
+                if (titleInput.length > 0) {
+                    var questionTitle = titleInput.val();
+                }
+
+                if (questionInput.length > 0) {
+                    var questionId = questionInput.attr('name').split('_')[1];
+                    var questionType = $(this).find('input[name="questionType_' + questionId + '"]').val();
+                    var options = [];
+
+                    if (questionType === 'true-false' || questionType === 'multiple-choice') {
+                        $(this).find('input[type="radio"]').each(function () {
+                            console.log();
+                            var optionValue = $(this).val();
+                            var isChecked = $(this).is(':checked');
+                            options.push({
+                                optionId: optionValue,
+                                isCorrect: isChecked,
+                                optionText: "",
+                            });
+                        });
+                    } else {
+                        var answer = $(this).find('textarea[name="question_' + questionId + '"]').val();
+                        options.push({
+                            optionId: "",
+                            isCorrect: false,
+                            optionText: answer
+                        });
+                    }
+
+                    questionsData[questionId] = [{
+                        questionTitle: questionTitle,
+                        questionType: questionType,
+                        options: options
+                    }];
+                }
+            });
+            var description = $('textarea[name="description"]').val();
+            var inputTittle = $('#template-title').val();
+            var titleValue = $('#template-title').val();
+
+            var jsonToSend = {
+                templateId: @Model.Id, 
+                tittle: inputTittle,
+                description: description,
+                topic: titleValue,
+                questions: questionsData,
+            };
+
+            console.log("JSON que se va a enviar al backend:", JSON.stringify(jsonToSend));
+   
+            try {
+                $.ajax({
+                    url: '/api/Template/TemplateUpdate',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(jsonToSend),
+                    success: function (response) {
+                        console.log(response);
+                        alert(response.message || 'Template actualizado exitosamente!');
+                        window.location.href = "/Home/Index";
+                    },
+                    error: function (error) {
+                        alert(error.responseJSON?.message || 'Ocurrió un error al actualizar el template.');
+                    }
+                });
+            } catch (error) {
+                console.error("Error al enviar los datos:", error);
+                alert("Hubo un problema al enviar los datos al servidor.");
+            }
+        });
+
+        // fdifjdi
+        // lkfdodfk
+        // dlkfdof
+
+        var templateId = '@Model.Id';
+        Dropzone.options.profilePictureDropzone = {
+            url: '/api/Template/UploadFile/'+ templateId,
+            paramName: "file",
+            maxFilesize: 5,
+            acceptedFiles: "image/*",
+            success: function (file, response) {
+                if (response.success) {
+                    alert('Image updated successfully!');
+                    setTimeout(function () {
+                        window.location.href = '../showOwnTemplates';
+                    }, 550);
+                }
+            },error: function (file, errorMessage) {
+                console.error("Error al cargar la imagen:", errorMessage);
+                alert("Hubo un problema al cargar la imagen.");
+            }
+        };
     </script>
 </body>
 </html>

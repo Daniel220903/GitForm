@@ -24,15 +24,16 @@ namespace FormClick.Controllers{
         public AccessController(AppDBContext appDbContext) {
             _appDbContext = appDbContext;
         }
+        public IActionResult Home(){
 
-        public IActionResult Home() {
             var templates = _appDbContext.Templates
-                .Where(t => t.DeletedAt == null)
+                .Where(t => t.DeletedAt == null && t.IsCurrent == true)
                 .OrderByDescending(t => t.CreatedAt)
                 .Select(t => new TemplateViewModel {
                     TemplateId = t.Id,
                     Title = t.Title,
                     Description = t.Description,
+                    Version = t.Version,
                     CreatedAt = t.CreatedAt,
                     ProfilePicture = t.User.ProfilePicture,
                     picture = t.picture,
@@ -43,7 +44,7 @@ namespace FormClick.Controllers{
                 }).ToList();
 
             var topLikedTemplates = _appDbContext.Templates
-                .Where(t => t.DeletedAt == null)
+                .Where(t => t.DeletedAt == null && t.IsCurrent == true)
                 .OrderByDescending(t => t.Likes.Count())
                 .Take(5)
                 .Select(t => new TemplateViewModel {
@@ -64,7 +65,6 @@ namespace FormClick.Controllers{
 
             return View(viewModel);
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -273,7 +273,7 @@ namespace FormClick.Controllers{
                 Console.WriteLine("Search Term: " + request.SearchTerm);
 
                 var templates = _appDbContext.Templates
-                    .Where(t => t.DeletedAt == null &&
+                    .Where(t => t.DeletedAt == null && t.IsCurrent == true &&
                         (t.Title.Contains(request.SearchTerm) ||
                          t.Description.Contains(request.SearchTerm) ||
                          t.Topic.Contains(request.SearchTerm) ||
@@ -281,11 +281,11 @@ namespace FormClick.Controllers{
                          t.User.Email.Contains(request.SearchTerm)))
                     .OrderByDescending(t => t.CreatedAt)
                     .Take(30)
-                    .Select(t => new TemplateViewModel
-                    {
+                    .Select(t => new TemplateViewModel {
                         TemplateId = t.Id,
                         Title = t.Title,
                         Description = t.Description,
+                        Version = t.Version,
                         CreatedAt = t.CreatedAt,
                         ProfilePicture = t.User.ProfilePicture,
                         Topic = t.Topic,
@@ -310,7 +310,7 @@ namespace FormClick.Controllers{
             var isAdmin = _appDbContext.Users.Where(u => u.Id == userId).Select(u => u.Admin).FirstOrDefault();
 
             var templates = _appDbContext.Templates
-                .Where(t => t.DeletedAt == null &&
+                .Where(t => t.DeletedAt == null && t.IsCurrent == true &&
                     (t.Title.Contains(request.SearchTerm) ||
                         t.Description.Contains(request.SearchTerm) ||
                         t.Topic.Contains(request.SearchTerm) ||
@@ -327,7 +327,9 @@ namespace FormClick.Controllers{
                     Title = t.Title,
                     Description = t.Description,
                     CreatedAt = t.CreatedAt,
+                    Version = t.Version,
                     ProfilePicture = t.User.ProfilePicture,
+                    picture = t.picture,
                     Topic = t.Topic,
                     UserId = t.User.Id,
                     UserName = t.User.Username,
@@ -348,7 +350,7 @@ namespace FormClick.Controllers{
             try {
                 var templates = await _appDbContext.Templates
                     .Where(t => t.UserId == userId)
-                    .Where(t => t.DeletedAt == null &&
+                    .Where(t => t.DeletedAt == null && t.IsCurrent == true &&
                         (t.Title.Contains(request.SearchTerm) ||
                             t.Description.Contains(request.SearchTerm) ||
                             t.Topic.Contains(request.SearchTerm) ||

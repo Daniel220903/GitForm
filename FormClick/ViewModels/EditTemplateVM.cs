@@ -1,8 +1,11 @@
 ﻿namespace FormClick.ViewModels
 {
     public class EditTemplateVM{
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string picture { get; set; }
+        public int Version { get; set; }
         public string Topic { get; set; }
         public List<QuestionViewModelEdit> Questions { get; set; }
     }

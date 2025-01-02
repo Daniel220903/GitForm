@@ -11,12 +11,16 @@ namespace FormClick.Models
         public string Topic { get; set; }
         public string picture { get; set; }
         public bool Public { get; set; }
+        public int Version { get; set; }
+        public bool IsCurrent { get; set; } = false;
+        public int OriginalId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
         // Navigation properties
         public User User { get; set; }
+        public ICollection<TemplateHistorial> TemplateHistorials { get; set; }
         public ICollection<Question> Questions { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Like> Likes { get; set; }

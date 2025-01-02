@@ -16,6 +16,7 @@ namespace FormClick.Data
         public DbSet<Response> Responses { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Template> Templates { get; set; }
+        public DbSet<TemplateHistorial> TemplateHistorials { get; set; }
         public DbSet<TemplateAccess> TemplateAccess { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Like> Likes { get; set; }
@@ -67,6 +68,14 @@ namespace FormClick.Data
                 entity.HasMany(t => t.TemplateAccesses)
                       .WithOne(ta => ta.Template)
                       .HasForeignKey(ta => ta.TemplateId);
+            });
+
+            modelBuilder.Entity<TemplateHistorial>(entity => {
+                entity.HasKey(t => t.Id);
+                entity.HasOne(t => t.Template)
+                      .WithMany(t => t.TemplateHistorials)
+                      .HasForeignKey(t => t.TemplateId)
+                      .OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<TemplateAccess>(entity =>

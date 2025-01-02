@@ -8,6 +8,7 @@
         public string Text { get; set; }
         public string? openAnswer {  get; set; }
         public bool IsVisibleInResults { get; set; }
+        public int templateVersion { get; set; } = 0;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

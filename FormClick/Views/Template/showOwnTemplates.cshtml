@@ -101,6 +101,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var search = false;
         const templates = @Html.Raw(Json.Serialize(Model));
+
         let currentPage = 1;
         const templatesPerPage = 10;
 
@@ -134,12 +135,16 @@
                                                             <a href="#" style="margin-bottom: 2%; background-color: #6a3800; border:none;" class="btn btn-primary mt-2">${template.topic}</a>
                                                         </span>
                                                         <br />
-                                                        <span class="ms-2" style="margin-top:-20px;">
-                                                            <a href="../Template/EditTemplate/${template.templateId}" style="margin-bottom: 2%; margin-top: -20px;" class="btn btn-primary mt-2 answer-template">
-                                                                ${Edit}
-                                                            </a>
-                                                        </span>
+                                                            <span class="ms-2" style="margin-top:-20px;">
+                                                                <a href="${template.isCurrent === true ? `../Template/EditTemplate/${template.templateId}` : '#'}"
+                                                                   style="margin-bottom: 2%; margin-top: -20px;"
+                                                                   class="btn btn-primary mt-2 answer-template"
+                                                                   ${template.isCurrent === true ? '' : 'disabled'}>
+                                                                    ${template.isCurrent === true ? 'Editar' : 'Editado'}
+                                                                </a>
+                                                            </span>
                                                         <br />
+                                                        ${template.version >= 1 ? `<span class="badge bg-info text-dark">Versión: ${template.version}</span>` : ''}
                                                     </div>
                                                 </div>
 

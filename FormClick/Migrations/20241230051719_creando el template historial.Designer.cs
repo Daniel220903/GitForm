@@ -4,6 +4,7 @@ using FormClick.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FormClick.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241230051719_creando el template historial")]
+    partial class creandoeltemplatehistorial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,12 +337,6 @@ namespace FormClick.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsCurrent")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("OriginalId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Public")
                         .HasColumnType("bit");
 
@@ -496,9 +493,6 @@ namespace FormClick.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OriginalId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Picture")
                         .IsRequired()
@@ -694,13 +688,13 @@ namespace FormClick.Migrations
             modelBuilder.Entity("TemplateHistorial", b =>
                 {
                     b.HasOne("FormClick.Models.Template", "Template")
-                        .WithMany("TemplateHistorials")
+                        .WithMany("TemplateHistorial")
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("FormClick.Models.User", "User")
-                        .WithMany()
+                        .WithMany("TemplateHistorials")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -736,7 +730,7 @@ namespace FormClick.Migrations
 
                     b.Navigation("TemplateAccesses");
 
-                    b.Navigation("TemplateHistorials");
+                    b.Navigation("TemplateHistorial");
                 });
 
             modelBuilder.Entity("FormClick.Models.User", b =>
@@ -746,6 +740,8 @@ namespace FormClick.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
+
+                    b.Navigation("TemplateHistorials");
 
                     b.Navigation("Templates");
                 });

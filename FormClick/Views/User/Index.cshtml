@@ -65,16 +65,16 @@
         acceptedFiles: "image/*",
         dictDefaultMessage: "Drag and drop",
         success: function (file, response) {
-        console.log(response);
-        if (response.success) {
-            alert("Succesfully charged");
-            const img = document.querySelector('.profile-img');
-            img.src = response.filePath;
-            img.onload = function() { };
-        } else {
-            alert("Error: " + response.message);
+            console.log(response);
+            if (response.success) {
+                alert("Succesfully charged");
+                const img = document.querySelector('.profile-img');
+                img.src = response.filePath;
+                img.onload = function() { };
+            } else {
+                alert("Error: " + response.message);
+            }
         }
-    }
 
     };
 </script>

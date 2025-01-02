@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using FormClick.Data;
 using dotenv.net;
+using System.Text.Json;
 
 namespace FormClick{
     public class Program{
@@ -34,6 +35,12 @@ namespace FormClick{
 
             builder.Services.AddDbContext<AppDBContext>(options =>{
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Conn"));
+            });
+
+            builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
