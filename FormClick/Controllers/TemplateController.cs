@@ -385,6 +385,13 @@ namespace FormClick.Controllers
                 if (template == null)
                     return BadRequest("Something has gone wrong with your account");
 
+                var originalId = 0;
+                if(template.Version == 0){
+                    originalId = template.Id;
+                } else {
+                    originalId = template.OriginalId;
+                }
+
                 var currentVersion = template.Version;
                 TemplateHistorial templateHistorial = new TemplateHistorial {
                     TemplateId = template.Id,
@@ -394,6 +401,7 @@ namespace FormClick.Controllers
                     Topic = template.Topic,
                     Public = template.Public,
                     Version = currentVersion,
+                    OriginalId = originalId,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     Picture = template.picture,
@@ -413,6 +421,7 @@ namespace FormClick.Controllers
                     Public = template.Public,
                     Version = currentVersion + 1,
                     picture = template.picture,
+                    OriginalId = originalId,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     IsCurrent = true

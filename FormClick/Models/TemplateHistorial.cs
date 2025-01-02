@@ -3,6 +3,7 @@
 public class TemplateHistorial
 {
     public int Id { get; set; }
+    public int OriginalId { get; set; }
     public int UserId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }

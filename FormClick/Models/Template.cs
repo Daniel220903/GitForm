@@ -13,6 +13,7 @@ namespace FormClick.Models
         public bool Public { get; set; }
         public int Version { get; set; }
         public bool IsCurrent { get; set; } = false;
+        public int OriginalId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

@@ -329,6 +329,7 @@ namespace FormClick.Controllers{
                     CreatedAt = t.CreatedAt,
                     Version = t.Version,
                     ProfilePicture = t.User.ProfilePicture,
+                    picture = t.picture,
                     Topic = t.Topic,
                     UserId = t.User.Id,
                     UserName = t.User.Username,
